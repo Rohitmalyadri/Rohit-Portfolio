@@ -7,7 +7,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [react()],
-  base: "/Rohit-Portfolio",
+  base: "/Rohit-Portfolio/",
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
