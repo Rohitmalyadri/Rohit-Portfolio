@@ -226,7 +226,7 @@ const Index = () => {
       date: "Jun 2024",
       description: "Completed the Linguaskill English language assessment by Cambridge, covering reading, listening, writing, and speaking. The test evaluates real-world communication skills and aligns with international CEFR standards, supporting academic and professional language competence.",
       skills: ["Reading", "Listening", "Writing", "Speaking"],
-      imageUrl: "/src/assets/Rohit Malyadri Gadamsetty LinguaSkill_page-0001.jpg "
+      imageUrl: "src/assets/Rohit Malyadri Gadamsetty LinguaSkill_page-0001.jpg "
     },
     {
       title: "NPTEL Programming in Java",
@@ -303,7 +303,7 @@ const Index = () => {
               <div className="relative">
                 <div className="w-72 md:w-80 aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl ring-4 ring-white/20 bg-white">
                   <img 
-                    src="/src/assets/Rohit IITJ.jpg" 
+                    src="src/assets/Rohit IITJ.jpg" 
                     alt="Rohit Malyadri"
                     className="w-full h-full object-cover object-center"
                   />
