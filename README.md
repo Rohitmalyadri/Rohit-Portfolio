@@ -1,12 +1,34 @@
-# React + Vite
+# 💼 Personal Portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Welcome to my personal portfolio website! This project showcases my work, technical skills, education, and experience as a developer. It is designed to highlight my proficiency in full-stack development and includes interactive features, project demos, and a contact form.
 
-Currently, two official plugins are available:
+## 🧑‍💻 About Me
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+I'm a passionate software developer with hands-on experience in front-end and back-end technologies. My focus is on building responsive, user-friendly, and efficient web applications. This portfolio reflects my journey, capabilities, and growth in the tech industry.
 
-## Expanding the ESLint configuration
+## 🌐 Live Demo
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+https://RohitMalyadri.github.io/Rohit-Portfolio/
+
+## 🛠️ Technologies Used
+
+- **Frontend:** HTML, CSS, JavaScript, React.js
+- **Tools:** Git, GitHub, VS Code, Netlify / Vercel / Heroku
+
+## ✨ Features
+
+- Mobile-responsive design
+- Showcase of key projects with links to code and live demos
+- Resume download functionality
+- Contact form with email integration
+- Smooth navigation and UI/UX transitions
+
+## 🚀 Getting Started
+
+To run this project locally:
+
+```bash
+git clone https://github.com/your-username/portfolio.git
+cd portfolio
+npm install
+npm start
