@@ -14,7 +14,7 @@ export const CertificateCard = ({
   onImageClick,
 }) => {
   return (
-    <Card className="group card-hover border-2 border-transparent hover:border-primary/70 transition-all duration-200 overflow-hidden bg-white/90 dark:bg-slate-900/85 shadow-lg hover:shadow-2xl relative p-0">
+    <Card className="glass-panel group border-transparent hover:border-primary/50 transition-all duration-500 overflow-hidden hover:-translate-y-2 hover:shadow-anti-gravity dark:hover:shadow-anti-gravity-dark relative p-0">
       {imageUrl && (
         <button
           type="button"

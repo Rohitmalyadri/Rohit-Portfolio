@@ -50,7 +50,7 @@ export const ThemeToggle = () => {
       variant="ghost"
       size="sm"
       onClick={handleThemeChange}
-      className="w-9 h-9 p-0"
+      className="w-9 h-9 p-0 hover:shadow-glow hover:bg-primary/10 transition-all duration-300 rounded-full"
       title={`Current theme: ${theme}`}
     >
       {getIcon()}

@@ -182,7 +182,6 @@ const Index = () => {
       description: "A project based on Marvel superheroes, built with core web technologies.",
       techStack: ["HTML", "CSS"],
       githubUrl: "https://github.com/Rohitmalyadri/Marvel.git",
-      liveUrl: "https://rohitmalyadri.github.io/Marvel/"
     },
     {
       title: "Hospital Management System",
@@ -289,8 +288,11 @@ const Index = () => {
       
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-blue-900/20 dark:to-indigo-900/20">
+        {/* Anti-gravity glowing orbs */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 dark:bg-blue-500/20 rounded-full blur-[100px] animate-pulse-slow"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 dark:bg-purple-500/20 rounded-full blur-[100px] animate-pulse-slow delay-1000"></div>
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-        <div className="container mx-auto px-4 py-20">
+        <div className="container mx-auto px-4 py-24 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="order-2 lg:order-1 text-center lg:text-left animate-fade-in">
               <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
@@ -314,16 +316,16 @@ const Index = () => {
               </p>
             </div>
             <div className="order-1 lg:order-2 flex justify-center animate-scale-in">
-              <div className="relative">
-                <div className="w-72 md:w-80 aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl ring-4 ring-white/20 bg-white">
+              <div className="relative animate-float-slow">
+                <div className="w-72 md:w-80 aspect-[4/5] rounded-2xl overflow-hidden shadow-anti-gravity dark:shadow-anti-gravity-dark ring-4 ring-white/60 dark:ring-white/10 glass-panel transition-all duration-500 hover:shadow-glow hover:-translate-y-2">
                   <img 
                     src={RohitPhoto}
                     alt="Rohit Malyadri"
-                    className="w-full h-full object-cover object-center"
+                    className="w-full h-full object-cover object-center transition-transform duration-700 hover:scale-105"
                   />
                 </div>
-                <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full opacity-20 animate-pulse"></div>
-                <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-r from-green-500 to-blue-500 rounded-full opacity-30 animate-pulse delay-1000"></div>
+                <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full opacity-30 animate-float-delayed blur-xl"></div>
+                <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-r from-green-500 to-blue-500 rounded-full opacity-40 animate-float blur-xl"></div>
               </div>
             </div>
           </div>
@@ -331,8 +333,10 @@ const Index = () => {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-20 bg-background">
-        <div className="container mx-auto px-4">
+      <section id="about" className="py-24 bg-background relative overflow-hidden">
+        {/* Subtle background orb for depth */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-slate-200/50 dark:bg-slate-800/20 rounded-full blur-[120px] -z-10"></div>
+        <div className="container mx-auto px-4 relative z-10">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">About Me</h2>
           <div className="max-w-4xl mx-auto">
             <p className="text-lg text-muted-foreground text-center mb-8 leading-relaxed">
@@ -341,23 +345,23 @@ const Index = () => {
             Driven by curiosity, I continuously explore emerging technologies and enjoy turning innovative ideas into functional solutions. I thrive in collaborative environments and am always eager to learn, contribute, and grow as a developer.
             </p>
             <div className="grid md:grid-cols-3 gap-6">
-              <Card className="text-center p-6 hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/50">
+              <Card className="text-center p-6 glass-panel transform transition-all duration-500 hover:-translate-y-2 hover:shadow-anti-gravity dark:hover:shadow-anti-gravity-dark border-transparent hover:border-primary/30">
                 <CardContent className="p-0">
-                  <div className="text-4xl mb-4">📚</div>
+                  <div className="text-4xl mb-4 animate-float">📚</div>
                   <h3 className="font-semibold mb-2">Education</h3>
                   <p className="text-sm text-muted-foreground">Currently pursuing 3rd year B.Tech in Computer Science and Engineering at KL University.</p>
                 </CardContent>
               </Card>
-              <Card className="text-center p-6 hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/50">
+              <Card className="text-center p-6 glass-panel transform transition-all duration-500 hover:-translate-y-2 hover:shadow-anti-gravity dark:hover:shadow-anti-gravity-dark border-transparent hover:border-primary/30" style={{ transitionDelay: '100ms' }}>
                 <CardContent className="p-0">
-                  <div className="text-4xl mb-4">💻</div>
+                  <div className="text-4xl mb-4 animate-float-delayed">💻</div>
                   <h3 className="font-semibold mb-2">Tech Stack</h3>
                   <p className="text-sm text-muted-foreground">HTML, CSS, JavaScript, React, Spring Boot, MySQL, MongoDB, Git, GitHub, TailwindCSS, AWS</p>
                 </CardContent>
               </Card>
-              <Card className="text-center p-6 hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/50">
+              <Card className="text-center p-6 glass-panel transform transition-all duration-500 hover:-translate-y-2 hover:shadow-anti-gravity dark:hover:shadow-anti-gravity-dark border-transparent hover:border-primary/30" style={{ transitionDelay: '200ms' }}>
                 <CardContent className="p-0">
-                  <div className="text-4xl mb-4">🚀</div>
+                  <div className="text-4xl mb-4 animate-float-slow">🚀</div>
                   <h3 className="font-semibold mb-2">Status</h3>
                   <p className="text-sm text-muted-foreground">Actively looking for internships and Jobs in the field of Software Development, AI/ML, and Web Development.</p>
                 </CardContent>
@@ -368,8 +372,9 @@ const Index = () => {
       </section>
 
       {/* Projects Section */}
-      <section id="projects" className="py-20 bg-muted/30">
-        <div className="container mx-auto px-4">
+      <section id="projects" className="py-24 bg-muted/20 relative overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-[100px] -z-10 animate-pulse-slow"></div>
+        <div className="container mx-auto px-4 relative z-10">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">My Projects</h2>
           <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8 max-w-7xl mx-auto">
             {projects.map((project, index) => (
@@ -380,8 +385,9 @@ const Index = () => {
       </section>
 
       {/* Experience Section */}
-      <section id="experience" className="py-20 bg-background">
-        <div className="container mx-auto px-4">
+      <section id="experience" className="py-24 bg-background relative overflow-hidden">
+        <div className="absolute top-1/4 -left-40 w-[400px] h-[400px] bg-indigo-500/5 dark:bg-indigo-500/10 rounded-full blur-[100px] -z-10 animate-pulse-slow delay-1000"></div>
+        <div className="container mx-auto px-4 relative z-10">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">Experience & Activities</h2>
           <div className="max-w-4xl mx-auto space-y-6">
             {experiences.map((experience, index) => (
@@ -392,8 +398,9 @@ const Index = () => {
       </section>
 
       {/* Certificates Section */}
-      <section id="certificates" className="py-20 bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-50 dark:from-slate-900 dark:via-blue-900/40 dark:to-indigo-900/30">
-        <div className="container mx-auto px-4">
+      <section id="certificates" className="py-24 bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-50 dark:from-slate-900 dark:via-blue-900/40 dark:to-indigo-900/30 relative overflow-hidden">
+        <div className="absolute inset-0 bg-grid-pattern opacity-5 z-0"></div>
+        <div className="container mx-auto px-4 relative z-10">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 text-gradient">🎓 Certificates & Achievements</h2>
           <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-10 max-w-7xl mx-auto">
             {certificates.map((certificate, index) => (
@@ -434,11 +441,11 @@ const Index = () => {
       </section>
 
       {/* Resume Section */}
-      <section id="resume" className="py-20 bg-muted/30">
-        <div className="container mx-auto px-4">
+      <section id="resume" className="py-24 bg-muted/20 relative overflow-hidden">
+        <div className="container mx-auto px-4 relative z-10">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">My Resume</h2>
           <div className="max-w-2xl mx-auto">
-            <Card className="p-8 text-center border-2 hover:border-primary/50 transition-all duration-300">
+            <Card className="p-8 text-center glass-panel transform transition-all duration-500 hover:-translate-y-2 hover:shadow-anti-gravity dark:hover:shadow-anti-gravity-dark border-transparent hover:border-primary/50">
               <CardContent className="p-0">
                 <div className="text-6xl mb-6">📄</div>
                 <h3 className="text-2xl font-semibold mb-4">Download My Resume</h3>
@@ -470,8 +477,9 @@ const Index = () => {
       </section>
 
       {/* Coding Profiles Section */}
-      <section id="coding-handles" className="py-20 bg-muted/30">
-        <div className="container mx-auto px-4">
+      <section id="coding-handles" className="py-24 bg-muted/20 relative overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-slate-200/50 dark:bg-slate-800/20 rounded-full blur-[120px] -z-10"></div>
+        <div className="container mx-auto px-4 relative z-10">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 flex items-center justify-center gap-3">
             <span>
               <svg className="inline-block w-8 h-8 text-blue-500 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -535,11 +543,12 @@ const Index = () => {
       </section>
 
       {/* Feedback Section */}
-      <section id="feedback" className="py-20 bg-background">
-        <div className="container mx-auto px-4">
+      <section id="feedback" className="py-24 bg-background relative overflow-hidden">
+        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-purple-500/5 dark:bg-purple-500/10 rounded-full blur-[100px] -z-10 animate-pulse-slow"></div>
+        <div className="container mx-auto px-4 relative z-10">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">Send Feedback</h2>
           <div className="max-w-2xl mx-auto">
-            <Card className="p-8 border-2 hover:border-primary/50 transition-all duration-300">
+            <Card className="p-8 glass-panel transform transition-all duration-500 hover:shadow-anti-gravity dark:hover:shadow-anti-gravity-dark border-transparent hover:border-primary/50">
               <CardContent className="p-0">
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div>
@@ -620,7 +629,7 @@ const Index = () => {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-20 bg-muted/30">
+      <section id="contact" className="py-24 bg-muted/20 relative overflow-hidden">
         <br />
         <br />
         <br />

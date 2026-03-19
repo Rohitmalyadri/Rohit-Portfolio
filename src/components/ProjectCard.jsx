@@ -5,9 +5,10 @@ import { Github, Rocket } from 'lucide-react';
 
 export const ProjectCard = ({ title, description, techStack, githubUrl, liveUrl }) => {
   return (
-    <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-2 hover:border-primary/50">
-      <CardHeader>
-        <CardTitle className="group-hover:text-primary transition-colors">{title}</CardTitle>
+    <Card className="glass-panel group relative overflow-hidden transition-all duration-500 hover:-translate-y-3 hover:shadow-anti-gravity dark:hover:shadow-anti-gravity-dark border-transparent hover:border-primary/40">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+      <CardHeader className="relative z-10">
+        <CardTitle className="group-hover:text-primary transition-colors duration-300">{title}</CardTitle>
         <CardDescription className="text-sm leading-relaxed">{description}</CardDescription>
       </CardHeader>
       <CardContent>
