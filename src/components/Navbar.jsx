@@ -10,6 +10,7 @@ export const Navbar = ({ activeSection, onSectionClick }) => {
   const navItems = [
     { id: 'about', label: 'About Me' },
     { id: 'projects', label: 'Projects' },
+    { id: 'blogs', label: 'Blogs' },
     { id: 'experience', label: 'Experience' },
     { id: 'certificates', label: 'Certificates' },
     { id: 'resume', label: 'Resume' },

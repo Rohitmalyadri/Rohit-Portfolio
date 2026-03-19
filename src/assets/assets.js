@@ -8,9 +8,12 @@ import WinterSchool from './WinterSchoolCertificate.jpg';
 import JavaInternship from './Java Internship.jpg';
 import IITH from './IITH.jpg';
 import Deloitte from './Deloitte Forage Certificate.jpg';
+import neo4j from './neo4j.png';
+import OCI_AI from './OCI AI.png';
+import OCI_DevOps from './OCI DevOps.png';
 
 // Resume
-import ResumePDF from './RohitMalyadri_Resume_June2025.pdf';
+import ResumePDF from './Rohit_Malyadri_Resume.pdf';
 
 // Coding Platform Logos
 import CodeChefLogo from './CodeChef.png';
@@ -28,5 +31,8 @@ export {
   ResumePDF,
   CodeChefLogo,
   LeetCodeLogo,
-  HackerRankLogo
+  HackerRankLogo,
+  neo4j,
+  OCI_AI,
+  OCI_DevOps
 };

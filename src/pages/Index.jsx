@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense, lazy } from 'react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -7,11 +7,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { ProjectCard } from '@/components/ProjectCard';
-import { ExperienceCard } from '@/components/ExperienceCard';
-import { CertificateCard } from '@/components/CertificateCard';
 import { Navbar } from '@/components/Navbar';
-import { Mail, User, Book, Rocket, Github, Code } from 'lucide-react';
+import { Mail, User, Book, Rocket, Github, Code, FileText, FileSignature, X } from 'lucide-react';
+
+const ProjectCard = lazy(() => import('@/components/ProjectCard').then(m => ({ default: m.ProjectCard })));
+const ExperienceCard = lazy(() => import('@/components/ExperienceCard').then(m => ({ default: m.ExperienceCard })));
+const CertificateCard = lazy(() => import('@/components/CertificateCard').then(m => ({ default: m.CertificateCard })));
+const BlogCard = lazy(() => import('@/components/BlogCard').then(m => ({ default: m.BlogCard })));
 import { SocialLinks } from '@/components/SocialLinks';
 import { CodingHandles } from '@/components/CodingHandles';
 import { RotatingText } from '@/components/RotatingText';
@@ -26,7 +28,10 @@ import {
   ResumePDF,
   CodeChefLogo,
   LeetCodeLogo,
-  HackerRankLogo
+  HackerRankLogo,
+  neo4j,
+  OCI_AI,
+  OCI_DevOps
 } from '@/assets/assets';
 
 
@@ -41,14 +46,39 @@ const Index = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Modal state for certificate fullscreen view
+  // Modal state for certificate fullscreen view and cover letter
   const [modalImage, setModalImage] = useState(null);
+  const [showCoverLetter, setShowCoverLetter] = useState(false);
+
+  // Blogs state
+  const [blogs, setBlogs] = useState([]);
+  const [loadingBlogs, setLoadingBlogs] = useState(true);
+
+  // Fetch Medium Blogs
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const response = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@rohitmalyadri19');
+        const data = await response.json();
+        if (data.status === 'ok') {
+          setBlogs(data.items.slice(0, 3)); // show top 3
+        }
+      } catch (error) {
+        console.error('Error fetching blogs:', error);
+      } finally {
+        setLoadingBlogs(false);
+      }
+    };
+    fetchBlogs();
+  }, []);
 
   // Close modal on escape
   useEffect(() => {
-    if (!modalImage) return;
     const handleKey = (e) => {
-      if (e.key === 'Escape') setModalImage(null);
+      if (e.key === 'Escape') {
+        setModalImage(null);
+        setShowCoverLetter(false);
+      }
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
@@ -178,59 +208,99 @@ const Index = () => {
 
   const projects = [
     {
-      title: "Marvel",
-      description: "A project based on Marvel superheroes, built with core web technologies.",
-      techStack: ["HTML", "CSS"],
-      githubUrl: "https://github.com/Rohitmalyadri/Marvel.git",
-    },
-    {
-      title: "Hospital Management System",
-      description: "A full-stack web app for managing doctors, patients, appointments. Built with React and Spring Boot.",
-      techStack: ["React", "Spring Boot", "MySQL"],
-      githubUrl: "https://github.com/Rohitmalyadri/HealthBridgeHospitals.git",
-      liveUrl: "#"
-    }, 
-    {
-      title: "FlipClock Pomodoro & Stopwatch",
-      description: "A timer app with productivity tracking. TailwindCSS + React FlipClock.",
-      techStack: ["React", "TailwindCSS"],
-      githubUrl: "https://github.com/Rohitmalyadri/FlipClock.git",
-      liveUrl: "https://RohitMalyadri.github.io/FlipClock/"
-    }
-  ];
-
-  const experiences = [
-    {
-      title: "CIIE Core Member",
-      description: "Led innovation event for 1st-year students, coordinated workshops and mentored teams on entrepreneurial projects.",
-      icon: "🏫",
-      date: "2023-Present"
-    },
-    {
-      title: "IIT Jodhpur – Winter School on Generative AI",
-      description: "Completed intensive program on AI/ML fundamentals and practical applications of generative AI technologies.",
-      icon: "🧠",
-      date: "December 2024"
-    },
-    {
-      title: "IIT Hyderabad Workshop",
-      description: "Completed 3-day Entrepreneurial Essentials Program focusing on startup fundamentals and business development.",
-      icon: "🎓",
-      date: "May 2025"
-    },
-    {
-      title: "Java Full Stack Developer virtual Internship",
-      description: "Completed a 10 weeks internship program where I gained hands-on experience in HTML, CSS, JavaScriptJava, Spring Boot, MySQL etc. I also learned about the latest trends in the industry and how to apply them in real-world projects.",
-      icon: "💻",
-      date: "April 2025 - June 2025"
-    },
-    {
-      title: "Deloitte Australia Technology Completion Certificate",
-      description: "Completed a virtual job simulation replicating real-world consulting scenarios by developing solutions and authoring a dashboard proposal addressing technical specifications, stakeholder needs, and user experience.",
-      icon: "💻",
-      date: "June 2025"
-    }
-  ];
+    title: "FreshMart (Online Grocery App)",
+    description: "Built a scalable online grocery platform with product listings, authentication, and real-time updates using Firebase, enhancing user shopping experience.",
+    techStack: ["MERN Stack", "Gen AI", "Redis"],
+    githubUrl: "https://github.com/Rohitmalyadri/FreshMart.git"
+  },
+  {
+    title: "Brand Guidance System (RAG-based)",
+    description: "Developing an AI-powered system using Retrieval-Augmented Generation to analyze YouTube video content and guide brands on compliance with policies and standards.",
+    techStack: ["Python", "RAG", "LangChain", "LLMs", "React"],
+    githubUrl: "https://github.com/Rohitmalyadri/Brand_Guardian.git"
+  },
+  {
+    title: "Crop Prediction ML Web App",
+    description: "Created a machine learning-based web application using Flask and Random Forest to predict optimal crops based on soil and environmental parameters with ~98% accuracy.",
+    techStack: ["Python", "Flask", "ML", "Random Forest"],
+    githubUrl: "https://github.com/Rohitmalyadri/Crop_Predictions.git"
+  },
+   {
+    title: "Hospital Management System",
+    description: "Developed a full-stack healthcare platform to manage patients, doctors, and appointments with role-based access, improving workflow efficiency and data handling.",
+    techStack: ["React", "Spring Boot", "MySQL"],
+    githubUrl: "https://github.com/Rohitmalyadri/HealthBridgeHospitals.git"
+  },
+  {
+    title: "FlipClock Pomodoro & Stopwatch",
+    description: "Designed a productivity-focused timer application with Pomodoro and stopwatch features, featuring a modern UI built with React and Tailwind CSS.",
+    techStack: ["React", "TailwindCSS"],
+    githubUrl: "https://github.com/Rohitmalyadri/FlipClock.git",
+    liveUrl: "https://RohitMalyadri.github.io/FlipClock/"
+  },
+  {
+    title: "Marvel Web Project",
+    description: "Developed a responsive web project showcasing Marvel superheroes using core web technologies, focusing on UI design and layout structuring.",
+    techStack: ["HTML", "CSS"],
+    githubUrl: "https://github.com/Rohitmalyadri/Marvel.git"
+  }
+];
+ const experiences = [
+  {
+    title: "CIIE Core Member (Innovation Cell)",
+    description: "Actively contributed to organizing innovation-driven events and ideathons, mentoring peers on entrepreneurial thinking, problem-solving, and early-stage startup ideas.",
+    icon: "🏫",
+    date: "2023 – Present"
+  },
+  {
+    title: "IIT Jodhpur – Winter School on Generative AI",
+    description: "Completed an intensive program covering AI/ML fundamentals and practical applications of generative AI, focusing on real-world problem-solving approaches.",
+    icon: "🧠",
+    date: "December 2024"
+  },
+  {
+    title: "Java Full Stack Developer Internship",
+    description: "Completed a 10-week virtual internship gaining hands-on experience in building full-stack applications using HTML, CSS, JavaScript, Java, Spring Boot, and MySQL, along with exposure to industry practices.",
+    icon: "💻",
+    date: "Apr 2025 – Jun 2025"
+  },
+  {
+    title: "IIT Hyderabad – Entrepreneurial Essentials Workshop",
+    description: "Participated in a 3-day program focused on startup fundamentals, business models, and entrepreneurial thinking.",
+    icon: "🎓",
+    date: "May 2025"
+  },
+  {
+    title: "Deloitte Australia – Technology Job Simulation",
+    description: "Completed a virtual consulting simulation involving solution development and dashboard proposal creation, focusing on technical requirements, stakeholder needs, and user experience.",
+    icon: "📊",
+    date: "June 2025"
+  },
+  {
+    title: "Calibo AI Academy – Trainee",
+    description: "Selected for Calibo AI Academy, undergoing industry-oriented training with mentorship from professionals. Gaining hands-on experience in solving real-world problems, working on case studies, and developing a product-driven mindset.",
+    icon: "🤖",
+    date: "Dec 2025 – Present"
+  },
+  {
+    title: "Byte Quest Hackathon – AI Vibe Coding Challenge",
+    description: "Participated in a 24-hour hackathon where our team built an AI-powered medical assistant to help doctors analyze patient data and generate insights using a Random Forest model, React, and FastAPI.",
+    icon: "🚀",
+    date: "Jan 4–5, 2026"
+  },
+  {
+    title: "Guidewire DEVTrails Hackathon 2026",
+    description: "Currently participating in a 45-day intensive hackathon focused on solving real-world industry problems, collaborating in teams, and building impactful solutions.",
+    icon: "⚡",
+    date: "Feb 2026 – Present"
+  },
+  {
+    title: "ISB I-Venture Program Participant",
+    description: "Selected to attend ISB I-Venture, engaging in panel discussions and networking with professionals across industries on innovation, entrepreneurship, and the future of Indian startups.",
+    icon: "🏢",
+    date: "Mar 5–6, 2026"
+  }
+];
 
   const certificates = [
     {
@@ -279,6 +349,27 @@ const Index = () => {
       date: "Jun 2025",
       skills: ["Data Structures","Formal Communication","Planning","Programming","Python","Software Development Processes"],
       imageUrl: Deloitte
+    },
+    {
+      title: "Neo4j Certified Professional",
+      issuer: "Neo4j",
+      date: "Jun 2025",
+      skills: ["Graph Databases","Cypher Query Language","Neo4j"],
+      imageUrl: neo4j
+    },
+    {
+      title: "Oracle Cloud Infrastructure Certified Gen AI Professional",
+      issuer: "Oracle",
+      date: "Oct 2025",
+      skills: ["OCI","Gen AI"],
+      imageUrl: OCI_AI
+    },
+    {
+      title: "Oracle Cloud Infrastructure Certified DevOps Professional",
+      issuer: "Oracle",
+      date: "Oct 2025",
+      skills: ["OCI","DevOps"],
+      imageUrl: OCI_DevOps
     }
   ];
 
@@ -295,25 +386,45 @@ const Index = () => {
         <div className="container mx-auto px-4 py-24 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="order-2 lg:order-1 text-center lg:text-left animate-fade-in">
-              <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Hi, I'm Rohit Malyadri
               </h1>
-              <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed">
-                I am a{' '}
+              <h2 className="text-2xl md:text-3xl font-semibold mb-6 flex items-center justify-center lg:justify-start gap-2 text-foreground/90">
                 <RotatingText
-                  messages={[
-                    'Java Developer',
-                    'Aspiring Full Stack Developer',
-                    'AI & ML Enthusiast',
-                    'Problem Solver',
-                    'Tech Explorer',
-                    'Innovative and Design Thinking'
-                  ]}
-                  interval={2200}
-                  className="inline-block"
-                  highlightClassName="font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
+                messages={[
+                  "AI + Full Stack Developer",
+                  "Building Scalable Real-World Applications",
+                  "AI/ML Enthusiast",
+                  "MERN Stack Developer",
+                  "Problem Solver & DSA Practitioner",
+                  "Innovative mindset",
+                  "Exploring System Design & Cloud",
+                  "Driven to Build Impactful Tech Solutions"
+                ]}
                 />
+              </h2>
+              <p className="text-lg md:text-xl text-muted-foreground mb-8 leading-relaxed max-w-xl mx-auto lg:mx-0">
+               Designing and developing intelligent, scalable systems that turn real-world challenges into impactful solutions.
               </p>
+              <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
+                <Button 
+                  size="lg" 
+                  className="px-8 py-6 rounded-full shadow-glow hover:shadow-anti-gravity transition-all duration-300 text-base"
+                  onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                  View Projects
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="px-8 py-6 rounded-full glass-panel hover:bg-primary/10 transition-all duration-300 text-base" 
+                  asChild
+                >
+                  <a href={ResumePDF} download="Rohit_Malyadri_Resume.pdf" target="_blank" rel="noopener noreferrer">
+                    Download Resume
+                  </a>
+                </Button>
+              </div>
             </div>
             <div className="order-1 lg:order-2 flex justify-center animate-scale-in">
               <div className="relative animate-float-slow">
@@ -340,33 +451,96 @@ const Index = () => {
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">About Me</h2>
           <div className="max-w-4xl mx-auto">
             <p className="text-lg text-muted-foreground text-center mb-8 leading-relaxed">
-            I'm a B.Tech Computer Science student with a strong passion for software development, artificial intelligence, and creating impactful digital solutions. I have hands-on experience in full-stack web development and problem-solving using data structures and algorithms. My technical toolkit includes React, TailwindCSS, Spring Boot, MySQL, Git which I've used to build real-world applications.
-            <br />
-            Driven by curiosity, I continuously explore emerging technologies and enjoy turning innovative ideas into functional solutions. I thrive in collaborative environments and am always eager to learn, contribute, and grow as a developer.
+           I’m a Computer Science student specializing in Artificial Intelligence, passionate about building scalable full-stack applications and intelligent systems. I enjoy solving real-world problems using technologies like MERN stack and modern AI/ML tools.
+With hands-on experience in developing practical projects and participating in innovation-driven activities like ideathons, I focus on writing clean, efficient code and continuously improving my problem-solving skills through DSA and system design.
+Currently, I’m working towards becoming a high-impact software engineer by combining strong engineering fundamentals with intelligent, real-world solutions. 
             </p>
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
               <Card className="text-center p-6 glass-panel transform transition-all duration-500 hover:-translate-y-2 hover:shadow-anti-gravity dark:hover:shadow-anti-gravity-dark border-transparent hover:border-primary/30">
                 <CardContent className="p-0">
                   <div className="text-4xl mb-4 animate-float">📚</div>
                   <h3 className="font-semibold mb-2">Education</h3>
-                  <p className="text-sm text-muted-foreground">Currently pursuing 3rd year B.Tech in Computer Science and Engineering at KL University.</p>
+                  <p className="text-sm text-muted-foreground">Currently pursuing 3rd year B.Tech in CSE at KL University.</p>
                 </CardContent>
               </Card>
               <Card className="text-center p-6 glass-panel transform transition-all duration-500 hover:-translate-y-2 hover:shadow-anti-gravity dark:hover:shadow-anti-gravity-dark border-transparent hover:border-primary/30" style={{ transitionDelay: '100ms' }}>
                 <CardContent className="p-0">
-                  <div className="text-4xl mb-4 animate-float-delayed">💻</div>
-                  <h3 className="font-semibold mb-2">Tech Stack</h3>
-                  <p className="text-sm text-muted-foreground">HTML, CSS, JavaScript, React, Spring Boot, MySQL, MongoDB, Git, GitHub, TailwindCSS, AWS</p>
-                </CardContent>
-              </Card>
-              <Card className="text-center p-6 glass-panel transform transition-all duration-500 hover:-translate-y-2 hover:shadow-anti-gravity dark:hover:shadow-anti-gravity-dark border-transparent hover:border-primary/30" style={{ transitionDelay: '200ms' }}>
-                <CardContent className="p-0">
-                  <div className="text-4xl mb-4 animate-float-slow">🚀</div>
-                  <h3 className="font-semibold mb-2">Status</h3>
-                  <p className="text-sm text-muted-foreground">Actively looking for internships and Jobs in the field of Software Development, AI/ML, and Web Development.</p>
+                  <div className="text-4xl mb-4 animate-float-delayed">🚀</div>
+                  <h3 className="font-semibold mb-2">Goal</h3>
+                  <p className="text-sm text-muted-foreground">Seeking structured opportunities to build scalable apps and apply AI/ML to challenging problems.</p>
                 </CardContent>
               </Card>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Skills Section */}
+      <section id="skills" className="py-24 bg-muted/10 relative overflow-hidden">
+        <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-green-500/5 dark:bg-green-500/10 rounded-full blur-[100px] -z-10 animate-pulse-slow"></div>
+        <div className="container mx-auto px-4 relative z-10">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">Technical Skills</h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            <Card className="glass-panel p-6 transform transition-all duration-500 hover:-translate-y-2 hover:shadow-anti-gravity border-transparent hover:border-blue-500/50">
+              <CardHeader className="p-0 mb-4">
+                <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center mb-4 text-blue-500">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                </div>
+                <CardTitle className="text-xl">Frontend</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="flex flex-wrap gap-2">
+                  {["React", "HTML5", "CSS3", "JavaScript", "TailwindCSS"].map(tech => (
+                    <Badge key={tech} variant="secondary" className="bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20">{tech}</Badge>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="glass-panel p-6 transform transition-all duration-500 hover:-translate-y-2 hover:shadow-anti-gravity border-transparent hover:border-green-500/50" style={{ transitionDelay: '100ms' }}>
+              <CardHeader className="p-0 mb-4">
+                <div className="w-12 h-12 bg-green-500/10 rounded-xl flex items-center justify-center mb-4 text-green-500">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path></svg>
+                </div>
+                <CardTitle className="text-xl">Backend</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="flex flex-wrap gap-2">
+                  {["Java", "Spring Boot", "MySQL", "MongoDB", "REST APIs"].map(tech => (
+                    <Badge key={tech} variant="secondary" className="bg-green-500/10 text-green-600 dark:text-green-400 hover:bg-green-500/20">{tech}</Badge>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="glass-panel p-6 transform transition-all duration-500 hover:-translate-y-2 hover:shadow-anti-gravity border-transparent hover:border-purple-500/50" style={{ transitionDelay: '200ms' }}>
+              <CardHeader className="p-0 mb-4">
+                <div className="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center mb-4 text-purple-500">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                </div>
+                <CardTitle className="text-xl">AI / ML</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="flex flex-wrap gap-2">
+                  {["Python", "Machine Learning", "Neural Networks", "Generative AI"].map(tech => (
+                    <Badge key={tech} variant="secondary" className="bg-purple-500/10 text-purple-600 dark:text-purple-400 hover:bg-purple-500/20">{tech}</Badge>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="glass-panel p-6 transform transition-all duration-500 hover:-translate-y-2 hover:shadow-anti-gravity border-transparent hover:border-orange-500/50" style={{ transitionDelay: '300ms' }}>
+              <CardHeader className="p-0 mb-4">
+                <div className="w-12 h-12 bg-orange-500/10 rounded-xl flex items-center justify-center mb-4 text-orange-500">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                </div>
+                <CardTitle className="text-xl">Tools</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="flex flex-wrap gap-2">
+                  {["Git", "GitHub", "AWS", "VS Code", "Postman", "PyCharm"].map(tech => (
+                    <Badge key={tech} variant="secondary" className="bg-orange-500/10 text-orange-600 dark:text-orange-400 hover:bg-orange-500/20">{tech}</Badge>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
@@ -375,12 +549,55 @@ const Index = () => {
       <section id="projects" className="py-24 bg-muted/20 relative overflow-hidden">
         <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-[100px] -z-10 animate-pulse-slow"></div>
         <div className="container mx-auto px-4 relative z-10">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">My Projects</h2>
-          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8 max-w-7xl mx-auto">
-            {projects.map((project, index) => (
-              <ProjectCard key={index} {...project} />
-            ))}
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">Featured Works</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+            <Suspense fallback={<div className="md:col-span-2 lg:col-span-3 h-80 glass-panel rounded-xl animate-pulse"></div>}>
+              {/* Featured Project */}
+              {projects.length > 0 && (
+                <div className="md:col-span-2 lg:col-span-3">
+                  <ProjectCard {...projects[0]} isFeatured={true} />
+                </div>
+              )}
+              {/* Standard Projects */}
+              {projects.slice(1).map((project, index) => (
+                <ProjectCard key={index} {...project} />
+              ))}
+            </Suspense>
           </div>
+        </div>
+      </section>
+
+      {/* Tech Blogs Section */}
+      <section id="blogs" className="py-24 bg-muted/10 relative overflow-hidden">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="flex flex-col sm:flex-row justify-between items-center mb-16 gap-6 max-w-7xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold text-center sm:text-left">Articles & Insights</h2>
+            <Button variant="outline" className="glass-panel" asChild>
+              <a href="https://medium.com/@rohitmalyadri19" target="_blank" rel="noopener noreferrer">
+                View All Blogs
+              </a>
+            </Button>
+          </div>
+          
+          {loadingBlogs ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="h-[250px] glass-panel rounded-xl animate-pulse"></div>
+              ))}
+            </div>
+          ) : blogs.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+              <Suspense fallback={<div className="h-[250px] glass-panel rounded-xl animate-pulse"></div>}>
+                {blogs.map((blog, index) => (
+                  <BlogCard key={index} {...blog} />
+                ))}
+              </Suspense>
+            </div>
+          ) : (
+            <div className="text-center text-muted-foreground p-8 glass-panel rounded-xl max-w-2xl mx-auto">
+              <p>Check out my Medium profile for my latest writing and insights.</p>
+            </div>
+          )}
         </div>
       </section>
 
@@ -389,10 +606,16 @@ const Index = () => {
         <div className="absolute top-1/4 -left-40 w-[400px] h-[400px] bg-indigo-500/5 dark:bg-indigo-500/10 rounded-full blur-[100px] -z-10 animate-pulse-slow delay-1000"></div>
         <div className="container mx-auto px-4 relative z-10">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">Experience & Activities</h2>
-          <div className="max-w-4xl mx-auto space-y-6">
-            {experiences.map((experience, index) => (
-              <ExperienceCard key={index} {...experience} />
-            ))}
+          <div className="max-w-4xl mx-auto relative">
+            {/* Timeline vertical line */}
+            <div className="absolute left-[38px] md:left-[50%] top-4 bottom-4 w-1 bg-border rounded-full hidden sm:block"></div>
+            <div className="space-y-12">
+              <Suspense fallback={<div className="h-40 glass-panel rounded-xl animate-pulse"></div>}>
+                {experiences.map((experience, index) => (
+                  <ExperienceCard key={index} {...experience} index={index} />
+                ))}
+              </Suspense>
+            </div>
           </div>
         </div>
       </section>
@@ -403,15 +626,16 @@ const Index = () => {
         <div className="container mx-auto px-4 relative z-10">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 text-gradient">🎓 Certificates & Achievements</h2>
           <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-10 max-w-7xl mx-auto">
-            {certificates.map((certificate, index) => (
-              <CertificateCard
-                key={index}
-                {...certificate}
-                // Ensure 'description' is always present to satisfy CertificateCardProps
-                description={certificate.description ?? ""}
-                onImageClick={(url, title) => setModalImage({ url, title })}
-              />
-            ))}
+            <Suspense fallback={<div className="h-96 glass-panel rounded-xl animate-pulse"></div>}>
+              {certificates.map((certificate, index) => (
+                <CertificateCard
+                  key={index}
+                  {...certificate}
+                  description={certificate.description ?? ""}
+                  onImageClick={(url, title) => setModalImage({ url, title })}
+                />
+              ))}
+            </Suspense>
           </div>
         </div>
         {/* Modal for fullscreen image */}
@@ -440,41 +664,108 @@ const Index = () => {
         )}
       </section>
 
-      {/* Resume Section */}
+      {/* Resume & Cover Letter Section */}
       <section id="resume" className="py-24 bg-muted/20 relative overflow-hidden">
         <div className="container mx-auto px-4 relative z-10">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">My Resume</h2>
-          <div className="max-w-2xl mx-auto">
-            <Card className="p-8 text-center glass-panel transform transition-all duration-500 hover:-translate-y-2 hover:shadow-anti-gravity dark:hover:shadow-anti-gravity-dark border-transparent hover:border-primary/50">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">Resume & Cover Letter</h2>
+          <div className="max-w-3xl mx-auto">
+            <Card className="p-8 md:p-12 text-center glass-panel transform transition-all duration-500 hover:-translate-y-2 hover:shadow-anti-gravity dark:hover:shadow-anti-gravity-dark border-transparent hover:border-primary/50">
               <CardContent className="p-0">
-                <div className="text-6xl mb-6">📄</div>
-                <h3 className="text-2xl font-semibold mb-4">Download My Resume</h3>
-                <p className="text-muted-foreground mb-6">
-                  Get a detailed overview of my skills, experience, and academic background.<br/>
-                  <span className="text-xs text-slate-400">(Opens/downloads the actual file)</span>
+                <div className="flex justify-center gap-6 mb-8">
+                  <div className="w-16 h-16 bg-blue-500/10 text-blue-500 rounded-2xl flex items-center justify-center animate-float">
+                    <FileText className="w-8 h-8" />
+                  </div>
+                  <div className="w-16 h-16 bg-purple-500/10 text-purple-500 rounded-2xl flex items-center justify-center animate-float-delayed">
+                    <FileSignature className="w-8 h-8" />
+                  </div>
+                </div>
+                <h3 className="text-2xl font-semibold mb-4">Professional Documents</h3>
+                <p className="text-muted-foreground mb-10 max-w-lg mx-auto">
+                  Get a detailed overview of my skills, experience, and academic background, or read my cover letter to understand my drive and passion.
                 </p>
-                <a
-                  href={ResumePDF}
-                  download="Rohit_Malyadri_Resume.pdf"  
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block"
-                >
+                
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
                   <Button
                     size="lg"
-                    className="px-8 py-6 text-lg rounded-xl"
+                    className="w-full sm:w-auto px-8 py-6 text-base rounded-full shadow-glow hover:shadow-anti-gravity transition-all duration-300"
+                    asChild
                   >
-                    Download Resume
+                    <a
+                      href={ResumePDF}
+                      download="Rohit_Malyadri_Resume.pdf"  
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <FileText className="w-5 h-5 mr-2" />
+                      Download Resume
+                    </a>
                   </Button>
-                </a>
-                <p className="text-xs text-muted-foreground mt-4">
-                  (Resume previewed as image. For PDF, reach out by email!)
-                </p>
+                  
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="w-full sm:w-auto px-8 py-6 text-base rounded-full glass-panel hover:bg-primary/10 transition-all duration-300"
+                    onClick={() => setShowCoverLetter(true)}
+                  >
+                    <FileSignature className="w-5 h-5 mr-2" />
+                    View Cover Letter
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </div>
         </div>
       </section>
+
+      {/* Cover Letter Modal */}
+      {showCoverLetter && (
+        <div 
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm transition-all animate-fade-in px-4"
+          onClick={() => setShowCoverLetter(false)}
+        >
+          <div 
+            className="w-full max-w-3xl max-h-[90vh] overflow-y-auto glass-panel bg-white dark:bg-slate-900 rounded-2xl p-8 relative shadow-anti-gravity dark:shadow-anti-gravity-dark animate-scale-in"
+            onClick={e => e.stopPropagation()}
+          >
+            <button
+              className="absolute top-6 right-6 text-muted-foreground hover:text-foreground transition-colors bg-muted/50 hover:bg-muted p-2 rounded-full"
+              onClick={() => setShowCoverLetter(false)}
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold mb-2">Cover Letter</h2>
+              <p className="text-sm text-muted-foreground">To Hiring Manager,</p>
+            </div>
+            <div className="prose prose-sm md:prose-base dark:prose-invert max-w-none text-foreground/80 leading-relaxed font-serif">
+              <p>
+                I am writing to express my strong interest in joining your team as a Software Developer. As a dedicated Bachelor of Technology student specializing in Computer Science and Engineering, I have consistently pursued opportunities that challenge me to apply theoretical knowledge to practical, real-world problems.
+              </p>
+              <br/>
+              <p>
+                Throughout my academic journey and recent virtual internships, I have cultivated a robust skill set in full-stack development, with a particular focus on building scalable web applications. Furthermore, my hands-on experience with modern frameworks like React and Spring Boot—evidenced by projects like the Hospital Management System—demonstrates my capability to architect and deliver complete digital solutions.
+              </p>
+              <br/>
+              <p>
+                What drives me is not just writing code, but understanding how technology can drive business innovation. My participation in the Winter School on Generative AI and my role as a Core Member at CIIE highlight my commitment to staying ahead of technological trends and fostering a culture of continuous learning.
+              </p>
+              <br/>
+              <p>
+                I would welcome the opportunity to discuss how my technical skills, coupled with my passion for artificial intelligence and software engineering, align with the goals of your organization.
+              </p>
+              <br/>
+              <p>
+                Thank you for your time and consideration.
+              </p>
+              <br/>
+              <p className="mt-8">
+                Sincerely,<br/>
+                <strong>Rohit Malyadri</strong>
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Coding Profiles Section */}
       <section id="coding-handles" className="py-24 bg-muted/20 relative overflow-hidden">
@@ -630,15 +921,13 @@ const Index = () => {
 
       {/* Contact Section */}
       <section id="contact" className="py-24 bg-muted/20 relative overflow-hidden">
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 text-gradient">Get in Touch</h2>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-3xl mx-auto text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold mb-6 text-gradient">Let's build something impactful together</h2>
+            <p className="text-lg text-muted-foreground">
+              Whether you have a question, an opportunity, or just want to say hi, I'll try my best to get back to you!
+            </p>
+          </div>
           <div className="max-w-2xl mx-auto text-center">
             <div className="flex flex-col gap-7 justify-center items-center mb-10">
               {/* Personal Email */}
@@ -670,7 +959,7 @@ const Index = () => {
               <SocialLinks className="mt-2" iconSize={28} />
             </div>
             <footer className="text-center text-muted-foreground border-t pt-8 mt-10">
-              <p>© 2025 Rohit Malyadri. All rights reserved.</p>
+              <p>© 2026 Rohit Malyadri. All rights reserved.</p>
             </footer>
           </div>
         </div>
