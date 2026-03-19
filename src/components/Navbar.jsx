@@ -15,7 +15,6 @@ export const Navbar = ({ activeSection, onSectionClick }) => {
     { id: 'certificates', label: 'Certificates' },
     { id: 'resume', label: 'Resume' },
     { id: 'coding-handles', label: 'Coding Platforms' },
-    { id: 'feedback', label: 'Feedback' },
     { id: 'contact', label: 'Contact' },
   ];
 

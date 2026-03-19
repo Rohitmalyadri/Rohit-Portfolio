@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { Navbar } from '@/components/Navbar';
-import { Mail, User, Book, Rocket, Github, Code, FileText, FileSignature, X } from 'lucide-react';
+import { Mail, User, Book, Rocket, Github, Code, FileText, FileSignature, X, MessageSquare, Send, Loader2, CheckCircle2 } from 'lucide-react';
 
 const ProjectCard = lazy(() => import('@/components/ProjectCard').then(m => ({ default: m.ProjectCard })));
 const ExperienceCard = lazy(() => import('@/components/ExperienceCard').then(m => ({ default: m.ExperienceCard })));
@@ -42,9 +42,10 @@ const Index = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    message: ''
+    feedback: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null);
 
   // Modal state for certificate fullscreen view and cover letter
   const [modalImage, setModalImage] = useState(null);
@@ -82,11 +83,11 @@ const Index = () => {
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
-  }, [modalImage]);
+  }, [modalImage, showCoverLetter]);
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['about', 'projects', 'experience', 'certificates', 'resume', 'coding-handles', 'feedback', 'contact'];
+      const sections = ['about', 'projects', 'blogs', 'experience', 'certificates', 'resume', 'coding-handles', 'contact'];
       const scrollPosition = window.scrollY + 100;
 
       for (const section of sections) {
@@ -112,98 +113,43 @@ const Index = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleFeedbackSubmit = async (e) => {
     e.preventDefault();
-    
-    // Validation
-    if (!formData.name.trim()) {
-      toast({
-        title: "❌ Validation Error",
-        description: "Please enter your name.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    if (!formData.email.trim()) {
-      toast({
-        title: "❌ Validation Error", 
-        description: "Please enter your email address.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      toast({
-        title: "❌ Invalid Email",
-        description: "Please enter a valid email address.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    if (!formData.message.trim()) {
-      toast({
-        title: "❌ Validation Error",
-        description: "Please enter a message.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    if (formData.message.trim().length < 20) {
-      toast({
-        title: "❌ Message Too Short",
-        description: "Message must be at least 20 characters long.",
-        variant: "destructive"
-      });
-      return;
-    }
-
     setIsSubmitting(true);
-
+    setSubmitStatus(null);
     try {
-      // Create mailto URL with pre-filled content
-      const subject = encodeURIComponent(`Portfolio Feedback from ${formData.name}`);
-      const body = encodeURIComponent(
-        `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}\n\n---\nSent from portfolio website`
-      );
-      const mailtoUrl = `mailto:rohitmalyadri19@gmail.com?subject=${subject}&body=${body}`;
-      
-      // Open default email client
-      window.location.href = mailtoUrl;
-      
-      // Simulate sending delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      toast({
-        title: "✅ Email Client Opened!",
-        description: "Your default email client should now be open with the pre-filled message. Please send it from there."
+      const response = await fetch("https://formspree.io/f/mqaeerll", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
       });
-      
-      // Clear form
-      setFormData({ name: '', email: '', message: '' });
-      
+
+      if (response.ok) {
+        setSubmitStatus('success');
+        setFormData({ name: "", email: "", feedback: "" });
+        toast({
+          title: "Feedback Sent! 🚀",
+          description: "Thank you for reaching out. I'll get back to you soon.",
+        });
+        setTimeout(() => setSubmitStatus(null), 5000);
+      } else {
+        toast({
+          title: "Error",
+          description: "Something went wrong. Please try again later.",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
-      console.error('Error opening email client:', error);
       toast({
-        title: "❌ Something went wrong",
-        description: "Please try copying the email address manually: rohitmalyadri19@gmail.com",
-        variant: "destructive"
+        title: "Error",
+        description: "Network error. Please check your connection.",
+        variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
   };
 
   const projects = [
@@ -444,7 +390,7 @@ const Index = () => {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-24 bg-background relative overflow-hidden">
+      <section id="about" className="py-16 md:py-24 bg-background relative overflow-hidden">
         {/* Subtle background orb for depth */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-slate-200/50 dark:bg-slate-800/20 rounded-full blur-[120px] -z-10"></div>
         <div className="container mx-auto px-4 relative z-10">
@@ -476,7 +422,7 @@ Currently, I’m working towards becoming a high-impact software engineer by com
       </section>
 
       {/* Skills Section */}
-      <section id="skills" className="py-24 bg-muted/10 relative overflow-hidden">
+      <section id="skills" className="py-16 md:py-24 bg-muted/10 relative overflow-hidden">
         <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-green-500/5 dark:bg-green-500/10 rounded-full blur-[100px] -z-10 animate-pulse-slow"></div>
         <div className="container mx-auto px-4 relative z-10">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">Technical Skills</h2>
@@ -546,7 +492,7 @@ Currently, I’m working towards becoming a high-impact software engineer by com
       </section>
 
       {/* Projects Section */}
-      <section id="projects" className="py-24 bg-muted/20 relative overflow-hidden">
+      <section id="projects" className="py-16 md:py-24 bg-muted/20 relative overflow-hidden">
         <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-[100px] -z-10 animate-pulse-slow"></div>
         <div className="container mx-auto px-4 relative z-10">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">Featured Works</h2>
@@ -568,7 +514,7 @@ Currently, I’m working towards becoming a high-impact software engineer by com
       </section>
 
       {/* Tech Blogs Section */}
-      <section id="blogs" className="py-24 bg-muted/10 relative overflow-hidden">
+      <section id="blogs" className="py-16 md:py-24 bg-muted/10 relative overflow-hidden">
         <div className="container mx-auto px-4 relative z-10">
           <div className="flex flex-col sm:flex-row justify-between items-center mb-16 gap-6 max-w-7xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold text-center sm:text-left">Articles & Insights</h2>
@@ -602,7 +548,7 @@ Currently, I’m working towards becoming a high-impact software engineer by com
       </section>
 
       {/* Experience Section */}
-      <section id="experience" className="py-24 bg-background relative overflow-hidden">
+      <section id="experience" className="py-16 md:py-24 bg-background relative overflow-hidden">
         <div className="absolute top-1/4 -left-40 w-[400px] h-[400px] bg-indigo-500/5 dark:bg-indigo-500/10 rounded-full blur-[100px] -z-10 animate-pulse-slow delay-1000"></div>
         <div className="container mx-auto px-4 relative z-10">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">Experience & Activities</h2>
@@ -621,7 +567,7 @@ Currently, I’m working towards becoming a high-impact software engineer by com
       </section>
 
       {/* Certificates Section */}
-      <section id="certificates" className="py-24 bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-50 dark:from-slate-900 dark:via-blue-900/40 dark:to-indigo-900/30 relative overflow-hidden">
+      <section id="certificates" className="py-16 md:py-24 bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-50 dark:from-slate-900 dark:via-blue-900/40 dark:to-indigo-900/30 relative overflow-hidden">
         <div className="absolute inset-0 bg-grid-pattern opacity-5 z-0"></div>
         <div className="container mx-auto px-4 relative z-10">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 text-gradient">🎓 Certificates & Achievements</h2>
@@ -665,7 +611,7 @@ Currently, I’m working towards becoming a high-impact software engineer by com
       </section>
 
       {/* Resume & Cover Letter Section */}
-      <section id="resume" className="py-24 bg-muted/20 relative overflow-hidden">
+      <section id="resume" className="py-16 md:py-24 bg-muted/20 relative overflow-hidden">
         <div className="container mx-auto px-4 relative z-10">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">Resume & Cover Letter</h2>
           <div className="max-w-3xl mx-auto">
@@ -768,7 +714,7 @@ Currently, I’m working towards becoming a high-impact software engineer by com
       )}
 
       {/* Coding Profiles Section */}
-      <section id="coding-handles" className="py-24 bg-muted/20 relative overflow-hidden">
+      <section id="coding-handles" className="py-16 md:py-24 bg-muted/20 relative overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-slate-200/50 dark:bg-slate-800/20 rounded-full blur-[120px] -z-10"></div>
         <div className="container mx-auto px-4 relative z-10">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 flex items-center justify-center gap-3">
@@ -833,135 +779,155 @@ Currently, I’m working towards becoming a high-impact software engineer by com
         </div>
       </section>
 
-      {/* Feedback Section */}
-      <section id="feedback" className="py-24 bg-background relative overflow-hidden">
+      {/* Contact Section */}
+      <section id="contact" className="py-16 md:py-24 bg-muted/20 relative overflow-hidden">
+        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent"></div>
         <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-purple-500/5 dark:bg-purple-500/10 rounded-full blur-[100px] -z-10 animate-pulse-slow"></div>
         <div className="container mx-auto px-4 relative z-10">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">Send Feedback</h2>
-          <div className="max-w-2xl mx-auto">
-            <Card className="p-8 glass-panel transform transition-all duration-500 hover:shadow-anti-gravity dark:hover:shadow-anti-gravity-dark border-transparent hover:border-primary/50">
-              <CardContent className="p-0">
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div>
-                    <Label htmlFor="name" className="text-sm font-medium">
-                      Name *
-                    </Label>
-                    <Input
-                      id="name"
-                      type="text"
-                      placeholder="Enter your full name"
-                      value={formData.name}
-                      onChange={(e) => handleInputChange('name', e.target.value)}
-                      required
-                      className="mt-2"
-                      disabled={isSubmitting}
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="email" className="text-sm font-medium">
-                      Email *
-                    </Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="Enter your email address"
-                      value={formData.email}
-                      onChange={(e) => handleInputChange('email', e.target.value)}
-                      required
-                      className="mt-2"
-                      disabled={isSubmitting}
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="message" className="text-sm font-medium">
-                      Message *
-                    </Label>
-                    <Textarea
-                      id="message"
-                      placeholder="Share your feedback, suggestions, or just say hello..."
-                      value={formData.message}
-                      onChange={(e) => handleInputChange('message', e.target.value)}
-                      required
-                      rows={5}
-                      className="mt-2 resize-none"
-                      disabled={isSubmitting}
-                    />
-                  </div>
-                  
-                  <Button 
-                    type="submit" 
-                    size="lg" 
-                    className="w-full"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <span className="animate-spin mr-2">⏳</span>
-                        Opening Email Client...
-                      </>
-                    ) : (
-                      <>
-                        <Mail className="w-4 h-4 mr-2" />
-                        Send Feedback
-                      </>
-                    )}
-                  </Button>
-                  
-                  <p className="text-xs text-muted-foreground text-center">
-                    This will open your default email client with a pre-filled message to rohitmalyadri19@gmail.com
-                  </p>
-                </form>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Section */}
-      <section id="contact" className="py-24 bg-muted/20 relative overflow-hidden">
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold mb-6 text-gradient">Let's build something impactful together</h2>
-            <p className="text-lg text-muted-foreground">
-              Whether you have a question, an opportunity, or just want to say hi, I'll try my best to get back to you!
+          <div className="max-w-3xl mx-auto text-center mb-12 md:mb-16">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 md:mb-6 text-gradient leading-tight">Let's Build Something Impactful Together</h2>
+            <p className="text-base md:text-lg text-muted-foreground w-full max-w-2xl mx-auto">
+              Have an idea, opportunity, or feedback? I'd love to hear from you.
             </p>
           </div>
-          <div className="max-w-2xl mx-auto text-center">
-            <div className="flex flex-col gap-7 justify-center items-center mb-10">
-              {/* Personal Email */}
-              <div className="flex items-center gap-3">
-                <Mail className="inline w-7 h-7 align-bottom text-blue-300" />
-                <div className="flex flex-col items-start">
-                  <span className="text-xs font-semibold text-muted-foreground text-blue-300">Personal Email</span>
-                  <a
-                    href="mailto:rohitmalyadri19@gmail.com"
-                    className="text-lg font-medium hover:text-blue-300 transition-colors "
-                  >
-                    rohitmalyadri19@gmail.com
+          
+          <div className="grid lg:grid-cols-5 gap-8 lg:gap-12 max-w-6xl mx-auto px-2 sm:px-0">
+            {/* Contact Info */}
+            <div className="lg:col-span-2 flex flex-col justify-center">
+              <div className="glass-panel p-6 sm:p-8 rounded-2xl md:rounded-3xl shadow-anti-gravity dark:shadow-anti-gravity-dark hover:shadow-glow transition-all duration-500 relative overflow-hidden group h-full">
+                <div className="absolute -top-24 -right-24 w-48 h-48 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-all duration-500 pointer-events-none"></div>
+                <h3 className="text-2xl font-semibold mb-8">Contact Information</h3>
+                <div className="space-y-6 flex-grow">
+                  {/* Personal Email */}
+                  <a href="mailto:rohitmalyadri19@gmail.com" className="flex items-center gap-4 group/link">
+                    <div className="w-12 h-12 bg-blue-500/10 text-blue-500 rounded-xl flex items-center justify-center shrink-0 group-hover/link:scale-110 group-hover/link:bg-blue-500/20 transition-all duration-300">
+                      <Mail className="w-5 h-5" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-sm font-medium text-muted-foreground mb-1">Personal</div>
+                      <div className="text-sm sm:text-base font-semibold group-hover/link:text-blue-500 transition-colors truncate">rohitmalyadri19@gmail.com</div>
+                    </div>
+                  </a>
+                  {/* College Email */}
+                  <a href="mailto:2300031803cseh1@gmail.com" className="flex items-center gap-4 group/link">
+                    <div className="w-12 h-12 bg-green-500/10 text-green-500 rounded-xl flex items-center justify-center shrink-0 group-hover/link:scale-110 group-hover/link:bg-green-500/20 transition-all duration-300">
+                      <Mail className="w-5 h-5" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-sm font-medium text-muted-foreground mb-1">Academic</div>
+                      <div className="text-sm sm:text-base font-semibold group-hover/link:text-green-500 transition-colors truncate">2300031803cseh1@gmail.com</div>
+                    </div>
                   </a>
                 </div>
-              </div>
-              {/* College Email */}
-              <div className="flex items-center gap-3">
-                <Mail className="inline w-7 h-7 align-bottom text-green-300" />
-                <div className="flex flex-col items-start">
-                  <span className="text-xs font-semibold text-muted-foreground text-green-300">College Email</span>
-                  <a
-                    href="mailto:2300031803cseh1@gmail.com"
-                    className="text-lg font-medium hover:text-green-300 transition-colors"
-                  >
-                    2300031803cseh1@gmail.com
-                  </a>
+                
+                <div className="mt-10 pt-8 border-t border-border/50">
+                  <div className="text-sm font-medium text-muted-foreground mb-4">Connect with me</div>
+                  <SocialLinks iconSize={24} className="gap-4 flex-wrap" />
                 </div>
               </div>
-              <SocialLinks className="mt-2" iconSize={28} />
             </div>
-            <footer className="text-center text-muted-foreground border-t pt-8 mt-10">
-              <p>© 2026 Rohit Malyadri. All rights reserved.</p>
-            </footer>
+            
+            {/* Feedback Form */}
+            <div className="lg:col-span-3">
+              <Card className="glass-panel p-6 sm:p-10 shadow-anti-gravity dark:shadow-anti-gravity-dark border-primary/20 hover:border-primary/40 transition-colors duration-500 rounded-2xl md:rounded-3xl relative overflow-hidden h-full">
+                <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+                <CardContent className="p-0 relative z-10 h-full flex flex-col justify-center">
+                  {submitStatus === 'success' ? (
+                    <div className="flex flex-col items-center justify-center py-12 animate-scale-in text-center h-full">
+                      <div className="w-20 h-20 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mb-6 shadow-glow">
+                        <CheckCircle2 className="w-10 h-10" />
+                      </div>
+                      <h3 className="text-2xl sm:text-3xl font-bold mb-3">Message Sent! 🚀</h3>
+                      <p className="text-muted-foreground text-sm sm:text-base mb-8">Thank you for reaching out. I'll get back to you as soon as possible.</p>
+                      <Button 
+                        variant="outline" 
+                        className="rounded-full glass-panel px-8" 
+                        onClick={() => setSubmitStatus(null)}
+                      >
+                        Send Another Message
+                      </Button>
+                    </div>
+                  ) : (
+                    <form onSubmit={handleFeedbackSubmit} className="space-y-5 sm:space-y-6 text-left animate-fade-in flex flex-col h-full justify-between">
+                      <div className="space-y-2 group">
+                        <Label htmlFor="name" className="text-foreground/80 font-medium ml-1 text-sm sm:text-base">Name</Label>
+                        <div className="relative">
+                          <User className="absolute left-4 top-3.5 sm:top-4 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors duration-300 pointer-events-none" />
+                          <Input
+                            id="name"
+                            name="name"
+                            placeholder="John Doe"
+                            required
+                            className="pl-12 h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-background/50 border-muted-foreground/20 focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all duration-300 shadow-sm text-sm sm:text-base"
+                            value={formData.name}
+                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2 group">
+                        <Label htmlFor="email" className="text-foreground/80 font-medium ml-1 text-sm sm:text-base">Email</Label>
+                        <div className="relative">
+                          <Mail className="absolute left-4 top-3.5 sm:top-4 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors duration-300 pointer-events-none" />
+                          <Input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="john@example.com"
+                            required
+                            className="pl-12 h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-background/50 border-muted-foreground/20 focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all duration-300 shadow-sm text-sm sm:text-base"
+                            value={formData.email}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2 group flex-grow">
+                        <Label htmlFor="feedback" className="text-foreground/80 font-medium ml-1 text-sm sm:text-base">Message</Label>
+                        <div className="relative h-[calc(100%-24px)]">
+                          <MessageSquare className="absolute left-4 top-3.5 sm:top-4 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors duration-300 pointer-events-none" />
+                          <Textarea
+                            id="feedback"
+                            name="feedback"
+                            placeholder="I'd love to discuss..."
+                            required
+                            className="pl-12 min-h-[120px] sm:min-h-[150px] rounded-xl sm:rounded-2xl bg-background/50 border-muted-foreground/20 focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all duration-300 shadow-sm text-sm sm:text-base resize-y py-3.5 sm:py-4 h-full"
+                            value={formData.feedback}
+                            onChange={(e) => setFormData({ ...formData, feedback: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                      
+                      <Button 
+                        type="submit" 
+                        disabled={isSubmitting} 
+                        className="w-full h-12 sm:h-14 rounded-xl sm:rounded-2xl shadow-glow hover:shadow-anti-gravity transition-all duration-300 text-sm sm:text-base font-semibold group relative overflow-hidden mt-4 shrink-0"
+                      >
+                        <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out"></div>
+                        <span className="relative flex items-center justify-center gap-2">
+                          {isSubmitting ? (
+                            <>
+                              <Loader2 className="w-5 h-5 animate-spin" />
+                              Sending...
+                            </>
+                          ) : (
+                            <>
+                              Send Message
+                              <Send className="w-5 h-5 group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
+                            </>
+                          )}
+                        </span>
+                      </Button>
+                    </form>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
           </div>
+          
+          <footer className="text-center text-muted-foreground border-t border-border/30 pt-8 mt-16 md:mt-24">
+            <p className="text-sm sm:text-base">© 2026 Rohit Malyadri. All rights reserved.</p>
+          </footer>
         </div>
       </section>
     </div>
