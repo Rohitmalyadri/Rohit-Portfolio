@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { Navbar } from '@/components/Navbar';
+import { Chatbot } from '@/components/Chatbot';
 import { Mail, User, Book, Rocket, Github, Code, FileText, FileSignature, X, MessageSquare, Send, Loader2, CheckCircle2 } from 'lucide-react';
 
 const ProjectCard = lazy(() => import('@/components/ProjectCard').then(m => ({ default: m.ProjectCard })));
@@ -930,6 +931,9 @@ Currently, I’m working towards becoming a high-impact software engineer by com
           </footer>
         </div>
       </section>
+
+      {/* Floating Chatbot */}
+      <Chatbot />
     </div>
   );
 };
