@@ -13,7 +13,7 @@ https://RohitMalyadri.github.io/Rohit-Portfolio/
 ## 🛠️ Technologies Used
 
 - **Frontend:** HTML, CSS, JavaScript, React.js
-- **Tools:** Git, GitHub, VS Code, Netlify / Vercel / Heroku
+- **Tools:** Git, GitHub, VS Code, Vercel
 
 ## ✨ Features
 
