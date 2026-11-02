@@ -28,7 +28,7 @@ https://RohitMalyadri.github.io/Rohit-Portfolio/
 To run this project locally:
 
 ```bash
-git clone https://github.com/your-username/portfolio.git
+git clone https://github.com/Rohitmalyadri/Rohit-Portfolio.git
 cd portfolio
 npm install
 npm start
