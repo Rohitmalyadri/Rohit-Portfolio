@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { FileText, FileSignature, X } from 'lucide-react';
 import { ResumePDF } from '@/assets/assets';
 import { trackResumeDownload } from '@/lib/analytics';
+import { PROFILE } from '@/data/profileData';
 
 export const ResumeSection = () => {
   const [showCoverLetter, setShowCoverLetter] = useState(false);
@@ -39,7 +40,7 @@ export const ResumeSection = () => {
               </div>
               <h3 className="text-2xl font-semibold mb-4 text-foreground">Professional Documents</h3>
               <p className="text-muted-foreground mb-10 max-w-lg mx-auto">
-                Get a detailed overview of my skills, experience, and academic background, or read my cover letter to understand my drive and passion.
+                Review my technical background, verified experience, and academic trajectory, or read my cover letter outlining my engineering approach.
               </p>
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
@@ -101,32 +102,33 @@ export const ResumeSection = () => {
             </button>
             <div className="mb-8">
               <h2 id="cover-letter-title" className="text-2xl font-bold mb-2">Cover Letter</h2>
-              <p className="text-sm text-muted-foreground">To Hiring Manager,</p>
+              <p className="text-sm text-muted-foreground">To Hiring Manager & Engineering Leadership,</p>
             </div>
             <div className="prose prose-sm md:prose-base dark:prose-invert max-w-none text-foreground/80 leading-relaxed font-serif">
               <p>
-                I am writing to express my strong interest in joining your team as a Software Developer. As a dedicated Bachelor of Technology student specializing in Computer Science and Engineering, I have consistently pursued opportunities that challenge me to apply theoretical knowledge to practical, real-world problems.
+                I am writing to express my strong interest in AI Engineer and Full-Stack Engineering roles within your organization. As a final-year Computer Science and Engineering student at {PROFILE.academic.institution} (Class of {PROFILE.academic.graduationYear}) and currently an AI Engineer Intern at {PROFILE.company}, I focus on engineering resilient software systems and production-ready AI applications.
               </p>
               <br />
               <p>
-                Throughout my academic journey and recent virtual internships, I have cultivated a robust skill set in full-stack development, with a particular focus on building scalable web applications. Furthermore, my hands-on experience with modern frameworks like React and Spring Boot—evidenced by projects like the Hospital Management System—demonstrates my capability to architect and deliver complete digital solutions.
+                My technical experience combines backend system architecture, modern frontend frameworks, and applied artificial intelligence. In my current internship at {PROFILE.company} and through projects like the Brand Guidance System (RAG-based compliance engine) and FreshMart, I have designed modular services in FastAPI and Spring Boot, developed dynamic interfaces in React, and architected retrieval pipelines with LangChain and vector databases.
               </p>
               <br />
               <p>
-                What drives me is not just writing code, but understanding how technology can drive business innovation. My participation in the Winter School on Generative AI and my role as a Core Member at CIIE highlight my commitment to staying ahead of technological trends and fostering a culture of continuous learning.
+                Rather than treating AI as an isolated experiment, my priority is shipping robust, business-viable products. I focus on clean code structure, predictable latency, efficient caching with Redis, well-structured relational and document databases (PostgreSQL, MongoDB, Snowflake), and rigorous API contracts. My active involvement as a CIIE Core Member and participant in intensive hackathons like Guidewire DEVTrails and Byte Quest has further strengthened my rapid iteration and collaborative problem-solving capabilities.
               </p>
               <br />
               <p>
-                I would welcome the opportunity to discuss how my technical skills, coupled with my passion for artificial intelligence and software engineering, align with the goals of your organization.
+                I welcome the opportunity to discuss how my technical skills, engineering rigor, and applied AI capabilities can contribute directly to your team’s product goals and business challenges.
               </p>
               <br />
               <p>
-                Thank you for your time and consideration.
+                Thank you for your time, consideration, and leadership.
               </p>
               <br />
-              <p className="mt-8">
+              <p className="mt-8 font-sans">
                 Sincerely,<br />
-                <strong>Rohit Malyadri</strong>
+                <strong>{PROFILE.name}</strong><br />
+                <span className="text-xs text-muted-foreground">{PROFILE.headline}</span>
               </p>
             </div>
           </div>
@@ -135,4 +137,3 @@ export const ResumeSection = () => {
     </section>
   );
 };
-

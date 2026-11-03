@@ -12,72 +12,71 @@ import {
 
 export const certificates = [
   {
-    title: "LinguaSkill Certification",
-    issuer: "LinguaSkill",
+    title: "Linguaskill Business — CEFR B2",
+    issuer: "Cambridge Assessment English",
     date: "Jun 2024",
-    description: "Completed the Linguaskill English language assessment by Cambridge, covering reading, listening, writing, and speaking. The test evaluates real-world communication skills and aligns with international CEFR standards, supporting academic and professional language competence.",
-    skills: ["Reading", "Listening", "Writing", "Speaking"],
+    description: "Evaluated on reading, listening, writing, and speaking competencies aligned with the international CEFR standard for professional and technical communication.",
+    skills: ["Technical English", "Professional Communication", "Writing", "Comprehension"],
     imageUrl: LinguaSkill
   },
   {
     title: "NPTEL Programming in Java",
-    issuer: "Swayam",
+    issuer: "NPTEL (IIT Kharagpur)",
     date: "Jul - Oct 2024",
-    description: "Completed an 8-week course offered by IIT under the NPTEL platform, covering core Java concepts including object-oriented programming, exception handling, multithreading, Java collections, and GUI development. Gained hands-on experience through assignments and a proctored final exam.",
-    skills: ["Core Java", "OOPs", "GUI"],
+    description: "Completed an 8-week rigorous course covering object-oriented programming, multithreading, exception handling, Java collections framework, and GUI application design with a proctored exam.",
+    skills: ["Java", "OOP", "Multithreading", "Data Structures", "Collections"],
     imageUrl: NPTELJava
   },
   {
     title: "Winter School on Generative AI",
     issuer: "IIT Jodhpur",
     date: "Dec 2024",
-    description: "Completed intensive program covering AI/ML fundamentals, neural networks, and practical applications of generative AI technologies including GPT models and computer vision.",
-    skills: ["Machine Learning", "Neural Networks", "Generative AI", "Python", "Deep Learning"],
+    description: "Completed specialized technical training on modern Generative AI models, neural networks, foundation model architectures, and applied deep learning paradigms.",
+    skills: ["Generative AI", "Neural Networks", "Deep Learning", "Python", "LLMs"],
     imageUrl: WinterSchool
   },
   {
-    title: "Java Full Stack Virtual Internship",
-    issuer: "Eduskills KL University",
+    title: "Java Full Stack Developer",
+    issuer: "Eduskills / KL University",
     date: "Apr - Jun 2025",
-    description: "10-week intensive internship program focused on full-stack web development, including hands-on experience with HTML, CSS, JavaScript, Java, Spring Boot, and MySQL. Gained practical insights into current industry trends and their application in real-world projects.",
-    skills: ["HTML", "CSS", "Bootstrap", "JavaScript", "Java", "Spring Boot", "MySQL"],
+    description: "10-week intensive software engineering program covering full-stack web architectures, Spring Boot backend development, relational database modeling with MySQL, and responsive user interfaces.",
+    skills: ["Java", "Spring Boot", "MySQL", "REST APIs", "JavaScript", "HTML/CSS"],
     imageUrl: JavaInternship
   },
   {
     title: "Entrepreneurial Essentials Program",
     issuer: "IIT Hyderabad",
     date: "May 2025",
-    description: "3-day intensive workshop focusing on startup fundamentals, business development, innovation management, and entrepreneurial mindset development.",
-    skills: ["Entrepreneurship", "Business Development", "Innovation", "Leadership", "Strategic Planning", "Finance"],
+    description: "Intensive 3-day workshop focusing on technology venture creation, product strategy, market validation, and agile innovation processes.",
+    skills: ["Product Strategy", "Technology Innovation", "Leadership", "Market Validation"],
     imageUrl: IITH
   },
   {
-    title: "Deloitte Australia Technology Completion Certificate",
-    issuer: "Forage",
+    title: "Deloitte Australia Technology Simulation",
+    issuer: "Forage / Deloitte Australia",
     date: "Jun 2025",
-    skills: ["Data Structures", "Formal Communication", "Planning", "Programming", "Python", "Software Development Processes"],
+    skills: ["System Architecture", "Technical Analysis", "Python", "Data Structures", "Consulting"],
     imageUrl: Deloitte
   },
   {
     title: "Neo4j Certified Professional",
     issuer: "Neo4j",
     date: "Jun 2025",
-    skills: ["Graph Databases", "Cypher Query Language", "Neo4j"],
+    skills: ["Graph Databases", "Cypher Query Language", "Graph Data Modeling", "Neo4j"],
     imageUrl: neo4j
   },
   {
-    title: "Oracle Cloud Infrastructure Certified Gen AI Professional",
+    title: "Oracle Cloud Infrastructure 2024 Generative AI Professional",
     issuer: "Oracle",
     date: "Oct 2025",
-    skills: ["OCI", "Gen AI"],
+    skills: ["OCI", "Generative AI", "LLM Deployment", "Vector Databases", "Prompt Engineering"],
     imageUrl: OCI_AI
   },
   {
-    title: "Oracle Cloud Infrastructure Certified DevOps Professional",
+    title: "Oracle Cloud Infrastructure 2024 DevOps Professional",
     issuer: "Oracle",
     date: "Oct 2025",
-    skills: ["OCI", "DevOps"],
+    skills: ["OCI", "DevOps", "CI/CD Pipelines", "Containerization", "Infrastructure as Code"],
     imageUrl: OCI_DevOps
   }
 ];
-

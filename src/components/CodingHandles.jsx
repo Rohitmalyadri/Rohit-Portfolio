@@ -1,23 +1,24 @@
 import { Link } from "lucide-react";
 import { trackCodingProfileClick } from "@/lib/analytics";
+import { CodeChefLogo, HackerRankLogo, LeetCodeLogo } from "@/assets/assets";
 
 const platforms = [
   {
     name: "CodeChef",
     url: "https://www.codechef.com/users/klu2300031803",
-    icon: "/lovable-uploads/codechef.svg",
+    icon: CodeChefLogo,
     fallbackIcon: <span className="font-semibold text-sm text-orange-600">CC</span>,
   },
   {
     name: "HackerRank",
     url: "https://www.hackerrank.com/profile/h2300031803",
-    icon: "/lovable-uploads/hackerrank.svg",
+    icon: HackerRankLogo,
     fallbackIcon: <span className="font-semibold text-sm text-green-600">HR</span>,
   },
   {
     name: "LeetCode",
     url: "https://leetcode.com/u/klu2300031803/",
-    icon: "/lovable-uploads/leetcode.svg",
+    icon: LeetCodeLogo,
     fallbackIcon: <span className="font-semibold text-sm text-yellow-500">LC</span>,
   },
 ];

@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { RotatingText } from '@/components/RotatingText';
 import { RohitPhoto, ResumePDF } from '@/assets/assets';
 import { trackResumeDownload } from '@/lib/analytics';
+import { PROFILE } from '@/data/profileData';
 
 export const HeroSection = ({ onScrollToProjects }) => {
   return (
@@ -19,24 +20,13 @@ export const HeroSection = ({ onScrollToProjects }) => {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="order-2 lg:order-1 text-center lg:text-left animate-fade-in">
             <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Hi, I'm Rohit Malyadri
+              Hi, I'm {PROFILE.name}
             </h1>
             <div className="text-2xl md:text-3xl font-semibold mb-6 flex items-center justify-center lg:justify-start gap-2 text-foreground/90">
-              <RotatingText
-                messages={[
-                  "AI + Full Stack Developer",
-                  "Building Scalable Real-World Applications",
-                  "AI/ML Enthusiast",
-                  "MERN Stack Developer",
-                  "Problem Solver & DSA Practitioner",
-                  "Innovative mindset",
-                  "Exploring System Design & Cloud",
-                  "Driven to Build Impactful Tech Solutions"
-                ]}
-              />
+              <RotatingText messages={PROFILE.heroRotatingMessages} />
             </div>
             <p className="text-lg md:text-xl text-muted-foreground mb-8 leading-relaxed max-w-xl mx-auto lg:mx-0">
-              Designing and developing intelligent, scalable systems that turn real-world challenges into impactful solutions.
+              {PROFILE.tagline}
             </p>
             <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
               <Button 
@@ -70,7 +60,7 @@ export const HeroSection = ({ onScrollToProjects }) => {
               <div className="w-72 md:w-80 aspect-[4/5] rounded-2xl overflow-hidden shadow-anti-gravity dark:shadow-anti-gravity-dark ring-4 ring-white/60 dark:ring-white/10 glass-panel transition-all duration-500 hover:shadow-glow hover:-translate-y-2">
                 <img 
                   src={RohitPhoto}
-                  alt="Rohit Malyadri - AI Engineer and Software Developer"
+                  alt={`${PROFILE.name} - ${PROFILE.headline}`}
                   width="320"
                   height="400"
                   loading="eager"
@@ -87,4 +77,3 @@ export const HeroSection = ({ onScrollToProjects }) => {
     </section>
   );
 };
-

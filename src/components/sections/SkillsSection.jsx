@@ -4,16 +4,28 @@ import { skillsCategories } from '@/data/skillsData';
 
 const getCategoryIcon = (iconType) => {
   switch (iconType) {
-    case 'frontend':
+    case 'languages':
       return (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+        </svg>
+      );
+    case 'frontend':
+      return (
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
         </svg>
       );
     case 'backend':
       return (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
+        </svg>
+      );
+    case 'databases':
+      return (
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
         </svg>
       );
     case 'ai':
@@ -53,6 +65,16 @@ const colorStyles = {
     iconBg: 'bg-orange-500/10 text-orange-500',
     hoverBorder: 'hover:border-orange-500/50',
     badge: 'bg-orange-500/10 text-orange-600 dark:text-orange-400 hover:bg-orange-500/20'
+  },
+  cyan: {
+    iconBg: 'bg-cyan-500/10 text-cyan-500',
+    hoverBorder: 'hover:border-cyan-500/50',
+    badge: 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-500/20'
+  },
+  pink: {
+    iconBg: 'bg-pink-500/10 text-pink-500',
+    hoverBorder: 'hover:border-pink-500/50',
+    badge: 'bg-pink-500/10 text-pink-600 dark:text-pink-400 hover:bg-pink-500/20'
   }
 };
 
@@ -62,14 +84,14 @@ export const SkillsSection = () => {
       <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-green-500/5 dark:bg-green-500/10 rounded-full blur-[100px] -z-10 animate-pulse-slow pointer-events-none" aria-hidden="true" />
       <div className="container mx-auto px-4 relative z-10">
         <h2 id="skills-heading" className="text-3xl md:text-4xl font-bold text-center mb-16">Technical Skills</h2>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {skillsCategories.map((cat, idx) => {
             const style = colorStyles[cat.color] || colorStyles.blue;
             return (
               <Card
                 key={cat.title}
                 className={`glass-panel p-6 transform transition-all duration-500 hover:-translate-y-2 hover:shadow-anti-gravity border-transparent ${style.hoverBorder}`}
-                style={{ transitionDelay: `${idx * 100}ms` }}
+                style={{ transitionDelay: `${idx * 80}ms` }}
               >
                 <CardHeader className="p-0 mb-4">
                   <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${style.iconBg}`}>
@@ -94,4 +116,3 @@ export const SkillsSection = () => {
     </section>
   );
 };
-
