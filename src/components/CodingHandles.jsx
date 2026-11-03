@@ -1,4 +1,5 @@
 import { Link } from "lucide-react";
+import { trackCodingProfileClick } from "@/lib/analytics";
 
 const platforms = [
   {
@@ -29,14 +30,16 @@ export const CodingHandles = ({ className = "" }) => (
         href={p.url}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label={p.name}
+        onClick={() => trackCodingProfileClick(p.name)}
+        aria-label={`Visit Rohit's ${p.name} profile`}
         className="flex items-center gap-2 bg-background hover:bg-muted p-2 px-4 rounded-lg text-sm font-medium transition-colors shadow-sm border group"
       >
         {p.icon ? (
           <img
             src={p.icon}
-            alt={p.name}
+            alt={`${p.name} icon`}
             className="w-5 h-5 object-contain"
+            loading="lazy"
             onError={(e) => {
               e.target.style.display = "none";
             }}
@@ -45,7 +48,7 @@ export const CodingHandles = ({ className = "" }) => (
           p.fallbackIcon
         )}
         <span>{p.name}</span>
-        <Link className="w-3.5 h-3.5 text-muted-foreground transition-colors group-hover:text-primary" />
+        <Link className="w-3.5 h-3.5 text-muted-foreground transition-colors group-hover:text-primary" aria-hidden="true" />
       </a>
     ))}
   </div>

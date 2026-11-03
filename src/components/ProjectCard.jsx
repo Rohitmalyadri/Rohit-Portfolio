@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Github, Rocket } from 'lucide-react';
+import { trackProjectClick, trackGithubClick } from '@/lib/analytics';
 
 export const ProjectCard = ({ title, description, techStack, githubUrl, liveUrl, isFeatured }) => {
   return (
@@ -13,7 +14,7 @@ export const ProjectCard = ({ title, description, techStack, githubUrl, liveUrl,
         <div className="md:w-1/2 p-6 flex flex-col justify-center bg-muted/30 dark:bg-slate-800/30 border-b md:border-b-0 md:border-r border-border/50">
            <div className="aspect-video rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center relative overflow-hidden group-hover:shadow-glow transition-all">
              <div className="absolute inset-0 bg-grid-pattern opacity-20"></div>
-             <Rocket className="w-16 h-16 text-primary/50 group-hover:scale-110 group-hover:text-primary transition-all duration-300" />
+             <Rocket className="w-16 h-16 text-primary/50 group-hover:scale-110 group-hover:text-primary transition-all duration-300" aria-hidden="true" />
            </div>
         </div>
       )}
@@ -36,16 +37,31 @@ export const ProjectCard = ({ title, description, techStack, githubUrl, liveUrl,
             <div className="flex gap-4 pt-2">
               {liveUrl && liveUrl !== "#" && (
                 <Button size={isFeatured ? "default" : "sm"} asChild className="rounded-full shadow-md hover:shadow-glow">
-                  <a href={liveUrl} target="_blank" rel="noopener noreferrer">
-                    <Rocket className="w-4 h-4 mr-2" />
+                  <a
+                    href={liveUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => trackProjectClick(title, 'live_demo')}
+                    aria-label={`View live demo of ${title}`}
+                  >
+                    <Rocket className="w-4 h-4 mr-2" aria-hidden="true" />
                     Live Demo
                   </a>
                 </Button>
               )}
               {githubUrl && (
                 <Button variant="outline" size={isFeatured ? "default" : "sm"} asChild className="rounded-full glass-panel">
-                  <a href={githubUrl} target="_blank" rel="noopener noreferrer">
-                    <Github className="w-4 h-4 mr-2" />
+                  <a
+                    href={githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => {
+                      trackProjectClick(title, 'repository');
+                      trackGithubClick('repository', title);
+                    }}
+                    aria-label={`View source code of ${title} on GitHub`}
+                  >
+                    <Github className="w-4 h-4 mr-2" aria-hidden="true" />
                     Source Code
                   </a>
                 </Button>

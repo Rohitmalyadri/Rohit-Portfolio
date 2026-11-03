@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { MessageCircle, X, Send, Bot, User } from 'lucide-react';
+import { trackChatbotOpen } from '@/lib/analytics';
 import {
   WELCOME_MESSAGE,
   QUICK_SUGGESTIONS,
@@ -51,7 +52,7 @@ const MessageBubble = ({ message }) => {
     >
       {isBot && (
         <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shrink-0">
-          <Bot className="w-4 h-4 text-white" />
+          <Bot className="w-4 h-4 text-white" aria-hidden="true" />
         </div>
       )}
       <div
@@ -65,7 +66,7 @@ const MessageBubble = ({ message }) => {
       </div>
       {!isBot && (
         <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center shrink-0">
-          <User className="w-4 h-4 text-muted-foreground" />
+          <User className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
         </div>
       )}
     </div>
@@ -78,7 +79,7 @@ const MessageBubble = ({ message }) => {
 const TypingIndicator = () => (
   <div className="flex gap-2.5 items-end mb-3 animate-fade-in">
     <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shrink-0">
-      <Bot className="w-4 h-4 text-white" />
+      <Bot className="w-4 h-4 text-white" aria-hidden="true" />
     </div>
     <div className="bg-white dark:bg-slate-800 border border-border/50 px-4 py-3 rounded-2xl rounded-tl-sm shadow-sm">
       <div className="flex gap-1 items-center">
@@ -116,6 +117,16 @@ export const Chatbot = () => {
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [isOpen]);
+
+  const toggleChatbot = () => {
+    setIsOpen((prev) => {
+      const next = !prev;
+      if (next) {
+        trackChatbotOpen();
+      }
+      return next;
+    });
+  };
 
   const sendMessage = useCallback(
     (text) => {
@@ -164,7 +175,7 @@ export const Chatbot = () => {
           {/* Header */}
           <div className="flex items-center gap-3 px-5 py-4 bg-gradient-to-r from-blue-600 to-purple-600 shrink-0">
             <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center">
-              <Bot className="w-5 h-5 text-white" />
+              <Bot className="w-5 h-5 text-white" aria-hidden="true" />
             </div>
             <div className="flex-1">
               <h3 className="text-white font-semibold text-sm leading-tight">Ask Me About Rohit 👋</h3>
@@ -178,7 +189,7 @@ export const Chatbot = () => {
               className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors"
               aria-label="Close chatbot"
             >
-              <X className="w-4 h-4 text-white" />
+              <X className="w-4 h-4 text-white" aria-hidden="true" />
             </button>
           </div>
 
@@ -227,7 +238,7 @@ export const Chatbot = () => {
               className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:scale-100 shrink-0"
               aria-label="Send message"
             >
-              <Send className="w-4 h-4" />
+              <Send className="w-4 h-4" aria-hidden="true" />
             </button>
           </form>
         </div>
@@ -235,16 +246,16 @@ export const Chatbot = () => {
 
       {/* Floating Trigger Button */}
       <button
-        onClick={() => setIsOpen((prev) => !prev)}
+        onClick={toggleChatbot}
         className={`fixed bottom-6 right-4 sm:right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 text-white shadow-glow hover:shadow-anti-gravity flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 ${
           isOpen ? 'rotate-90' : 'rotate-0'
         }`}
         aria-label={isOpen ? 'Close chatbot' : 'Open chatbot'}
       >
         {isOpen ? (
-          <X className="w-6 h-6 transition-all" />
+          <X className="w-6 h-6 transition-all" aria-hidden="true" />
         ) : (
-          <MessageCircle className="w-6 h-6 transition-all" />
+          <MessageCircle className="w-6 h-6 transition-all" aria-hidden="true" />
         )}
 
         {/* Notification badge */}

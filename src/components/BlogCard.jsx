@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, Calendar } from 'lucide-react';
+import { trackMediumClick } from '@/lib/analytics';
 
 export const BlogCard = ({ title, description, link, pubDate }) => {
   // Format date nicely
@@ -12,7 +13,8 @@ export const BlogCard = ({ title, description, link, pubDate }) => {
 
   // Strip HTML from description if it's coming from RSS feed
   const stripHtml = (html) => {
-    let tmp = document.createElement("DIV");
+    if (!html) return "";
+    const tmp = document.createElement("DIV");
     tmp.innerHTML = html;
     return tmp.textContent || tmp.innerText || "";
   };
@@ -26,8 +28,8 @@ export const BlogCard = ({ title, description, link, pubDate }) => {
       
       <CardHeader className="relative z-10 flex-grow pt-8">
         <div className="flex items-center text-xs text-muted-foreground mb-3 font-medium">
-          <Calendar className="w-3.5 h-3.5 mr-1.5" />
-          {formattedDate}
+          <Calendar className="w-3.5 h-3.5 mr-1.5" aria-hidden="true" />
+          <time dateTime={new Date(pubDate).toISOString()}>{formattedDate}</time>
         </div>
         <CardTitle className="text-xl group-hover:text-primary transition-colors duration-300 line-clamp-2 leading-tight">
           {title}
@@ -39,9 +41,15 @@ export const BlogCard = ({ title, description, link, pubDate }) => {
       
       <CardContent className="relative z-10 pt-0 pb-6 mt-auto">
         <Button variant="ghost" className="w-full justify-start px-0 text-primary hover:text-primary hover:bg-transparent group-hover:translate-x-1 transition-transform" asChild>
-          <a href={link} target="_blank" rel="noopener noreferrer">
+          <a
+            href={link}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => trackMediumClick(title)}
+            aria-label={`Read article: ${title}`}
+          >
             Read Article
-            <ExternalLink className="w-4 h-4 ml-2" />
+            <ExternalLink className="w-4 h-4 ml-2" aria-hidden="true" />
           </a>
         </Button>
       </CardContent>

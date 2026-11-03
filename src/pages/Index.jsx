@@ -1,22 +1,26 @@
 import { useState, useEffect, Suspense, lazy } from 'react';
 import { Button } from '../components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { ThemeToggle } from '@/components/ThemeToggle';
 import { Navbar } from '@/components/Navbar';
 import { Chatbot } from '@/components/Chatbot';
-import { Mail, User, Book, Rocket, Github, Code, FileText, FileSignature, X, MessageSquare, Send, Loader2, CheckCircle2 } from 'lucide-react';
+import { Mail, User, FileText, FileSignature, X, MessageSquare, Send, Loader2, CheckCircle2 } from 'lucide-react';
+import {
+  trackResumeDownload,
+  trackMediumClick,
+  trackContactSubmit,
+  trackCodingProfileClick,
+} from '@/lib/analytics';
 
 const ProjectCard = lazy(() => import('@/components/ProjectCard').then(m => ({ default: m.ProjectCard })));
 const ExperienceCard = lazy(() => import('@/components/ExperienceCard').then(m => ({ default: m.ExperienceCard })));
 const CertificateCard = lazy(() => import('@/components/CertificateCard').then(m => ({ default: m.CertificateCard })));
 const BlogCard = lazy(() => import('@/components/BlogCard').then(m => ({ default: m.BlogCard })));
 import { SocialLinks } from '@/components/SocialLinks';
-import { CodingHandles } from '@/components/CodingHandles';
 import { RotatingText } from '@/components/RotatingText';
 import {
   RohitPhoto,
@@ -34,8 +38,6 @@ import {
   OCI_AI,
   OCI_DevOps
 } from '@/assets/assets';
-
-
 
 const Index = () => {
   const { toast } = useToast();
@@ -56,22 +58,42 @@ const Index = () => {
   const [blogs, setBlogs] = useState([]);
   const [loadingBlogs, setLoadingBlogs] = useState(true);
 
-  // Fetch Medium Blogs
+  // Fetch Medium Blogs with timeout and error handling
   useEffect(() => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
+
     const fetchBlogs = async () => {
       try {
-        const response = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@rohitmalyadri19');
-        const data = await response.json();
-        if (data.status === 'ok') {
-          setBlogs(data.items.slice(0, 3)); // show top 3
+        const response = await fetch(
+          'https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@rohitmalyadri19',
+          { signal: controller.signal }
+        );
+        if (!response.ok) {
+          throw new Error(`HTTP error ${response.status}`);
         }
-      } catch (error) {
-        console.error('Error fetching blogs:', error);
+        const data = await response.json();
+        if (data?.status === 'ok' && Array.isArray(data?.items)) {
+          setBlogs(data.items.slice(0, 3)); // show top 3
+        } else {
+          setBlogs([]);
+        }
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          console.warn('Medium blogs feed unavailable, falling back gracefully:', err.message);
+        }
+        setBlogs([]);
       } finally {
+        clearTimeout(timeoutId);
         setLoadingBlogs(false);
       }
     };
+
     fetchBlogs();
+    return () => {
+      clearTimeout(timeoutId);
+      controller.abort();
+    };
   }, []);
 
   // Close modal on escape
@@ -128,6 +150,7 @@ const Index = () => {
       });
 
       if (response.ok) {
+        trackContactSubmit();
         setSubmitStatus('success');
         setFormData({ name: "", email: "", feedback: "" });
         toast({
@@ -142,7 +165,7 @@ const Index = () => {
           variant: "destructive",
         });
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Network error. Please check your connection.",
@@ -155,99 +178,100 @@ const Index = () => {
 
   const projects = [
     {
-    title: "FreshMart (Online Grocery App)",
-    description: "Built a scalable online grocery platform with product listings, authentication, and real-time updates using Firebase, enhancing user shopping experience.",
-    techStack: ["MERN Stack", "Gen AI", "Redis"],
-    githubUrl: "https://github.com/Rohitmalyadri/FreshMart.git"
-  },
-  {
-    title: "Brand Guidance System (RAG-based)",
-    description: "Developing an AI-powered system using Retrieval-Augmented Generation to analyze YouTube video content and guide brands on compliance with policies and standards.",
-    techStack: ["Python", "RAG", "LangChain", "LLMs", "React"],
-    githubUrl: "https://github.com/Rohitmalyadri/Brand_Guardian.git"
-  },
-  {
-    title: "Crop Prediction ML Web App",
-    description: "Created a machine learning-based web application using Flask and Random Forest to predict optimal crops based on soil and environmental parameters with ~98% accuracy.",
-    techStack: ["Python", "Flask", "ML", "Random Forest"],
-    githubUrl: "https://github.com/Rohitmalyadri/Crop_Predictions.git"
-  },
-   {
-    title: "Hospital Management System",
-    description: "Developed a full-stack healthcare platform to manage patients, doctors, and appointments with role-based access, improving workflow efficiency and data handling.",
-    techStack: ["React", "Spring Boot", "MySQL"],
-    githubUrl: "https://github.com/Rohitmalyadri/HealthBridgeHospitals.git"
-  },
-  {
-    title: "FlipClock Pomodoro & Stopwatch",
-    description: "Designed a productivity-focused timer application with Pomodoro and stopwatch features, featuring a modern UI built with React and Tailwind CSS.",
-    techStack: ["React", "TailwindCSS"],
-    githubUrl: "https://github.com/Rohitmalyadri/FlipClock.git",
-    liveUrl: "https://RohitMalyadri.github.io/FlipClock/"
-  },
-  {
-    title: "Marvel Web Project",
-    description: "Developed a responsive web project showcasing Marvel superheroes using core web technologies, focusing on UI design and layout structuring.",
-    techStack: ["HTML", "CSS"],
-    githubUrl: "https://github.com/Rohitmalyadri/Marvel.git"
-  }
-];
- const experiences = [
-  {
-    title: "CIIE Core Member (Innovation Cell)",
-    description: "Actively contributed to organizing innovation-driven events and ideathons, mentoring peers on entrepreneurial thinking, problem-solving, and early-stage startup ideas.",
-    icon: "🏫",
-    date: "2023 – Present"
-  },
-  {
-    title: "IIT Jodhpur – Winter School on Generative AI",
-    description: "Completed an intensive program covering AI/ML fundamentals and practical applications of generative AI, focusing on real-world problem-solving approaches.",
-    icon: "🧠",
-    date: "December 2024"
-  },
-  {
-    title: "Java Full Stack Developer Internship",
-    description: "Completed a 10-week virtual internship gaining hands-on experience in building full-stack applications using HTML, CSS, JavaScript, Java, Spring Boot, and MySQL, along with exposure to industry practices.",
-    icon: "💻",
-    date: "Apr 2025 – Jun 2025"
-  },
-  {
-    title: "IIT Hyderabad – Entrepreneurial Essentials Workshop",
-    description: "Participated in a 3-day program focused on startup fundamentals, business models, and entrepreneurial thinking.",
-    icon: "🎓",
-    date: "May 2025"
-  },
-  {
-    title: "Deloitte Australia – Technology Job Simulation",
-    description: "Completed a virtual consulting simulation involving solution development and dashboard proposal creation, focusing on technical requirements, stakeholder needs, and user experience.",
-    icon: "📊",
-    date: "June 2025"
-  },
-  {
-    title: "Calibo AI Academy – Trainee",
-    description: "Selected for Calibo AI Academy, undergoing industry-oriented training with mentorship from professionals. Gaining hands-on experience in solving real-world problems, working on case studies, and developing a product-driven mindset.",
-    icon: "🤖",
-    date: "Dec 2025 – Present"
-  },
-  {
-    title: "Byte Quest Hackathon – AI Vibe Coding Challenge",
-    description: "Participated in a 24-hour hackathon where our team built an AI-powered medical assistant to help doctors analyze patient data and generate insights using a Random Forest model, React, and FastAPI.",
-    icon: "🚀",
-    date: "Jan 4–5, 2026"
-  },
-  {
-    title: "Guidewire DEVTrails Hackathon 2026",
-    description: "Currently participating in a 45-day intensive hackathon focused on solving real-world industry problems, collaborating in teams, and building impactful solutions.",
-    icon: "⚡",
-    date: "Feb 2026 – Present"
-  },
-  {
-    title: "ISB I-Venture Program Participant",
-    description: "Selected to attend ISB I-Venture, engaging in panel discussions and networking with professionals across industries on innovation, entrepreneurship, and the future of Indian startups.",
-    icon: "🏢",
-    date: "Mar 5–6, 2026"
-  }
-];
+      title: "FreshMart (Online Grocery App)",
+      description: "Built a scalable online grocery platform with product listings, authentication, and real-time updates using Firebase, enhancing user shopping experience.",
+      techStack: ["MERN Stack", "Gen AI", "Redis"],
+      githubUrl: "https://github.com/Rohitmalyadri/FreshMart.git"
+    },
+    {
+      title: "Brand Guidance System (RAG-based)",
+      description: "Developing an AI-powered system using Retrieval-Augmented Generation to analyze YouTube video content and guide brands on compliance with policies and standards.",
+      techStack: ["Python", "RAG", "LangChain", "LLMs", "React"],
+      githubUrl: "https://github.com/Rohitmalyadri/Brand_Guardian.git"
+    },
+    {
+      title: "Crop Prediction ML Web App",
+      description: "Created a machine learning-based web application using Flask and Random Forest to predict optimal crops based on soil and environmental parameters with ~98% accuracy.",
+      techStack: ["Python", "Flask", "ML", "Random Forest"],
+      githubUrl: "https://github.com/Rohitmalyadri/Crop_Predictions.git"
+    },
+    {
+      title: "Hospital Management System",
+      description: "Developed a full-stack healthcare platform to manage patients, doctors, and appointments with role-based access, improving workflow efficiency and data handling.",
+      techStack: ["React", "Spring Boot", "MySQL"],
+      githubUrl: "https://github.com/Rohitmalyadri/HealthBridgeHospitals.git"
+    },
+    {
+      title: "FlipClock Pomodoro & Stopwatch",
+      description: "Designed a productivity-focused timer application with Pomodoro and stopwatch features, featuring a modern UI built with React and Tailwind CSS.",
+      techStack: ["React", "TailwindCSS"],
+      githubUrl: "https://github.com/Rohitmalyadri/FlipClock.git",
+      liveUrl: "https://RohitMalyadri.github.io/FlipClock/"
+    },
+    {
+      title: "Marvel Web Project",
+      description: "Developed a responsive web project showcasing Marvel superheroes using core web technologies, focusing on UI design and layout structuring.",
+      techStack: ["HTML", "CSS"],
+      githubUrl: "https://github.com/Rohitmalyadri/Marvel.git"
+    }
+  ];
+
+  const experiences = [
+    {
+      title: "CIIE Core Member (Innovation Cell)",
+      description: "Actively contributed to organizing innovation-driven events and ideathons, mentoring peers on entrepreneurial thinking, problem-solving, and early-stage startup ideas.",
+      icon: "🏫",
+      date: "2023 – Present"
+    },
+    {
+      title: "IIT Jodhpur – Winter School on Generative AI",
+      description: "Completed an intensive program covering AI/ML fundamentals and practical applications of generative AI, focusing on real-world problem-solving approaches.",
+      icon: "🧠",
+      date: "December 2024"
+    },
+    {
+      title: "Java Full Stack Developer Internship",
+      description: "Completed a 10-week virtual internship gaining hands-on experience in building full-stack applications using HTML, CSS, JavaScript, Java, Spring Boot, and MySQL, along with exposure to industry practices.",
+      icon: "💻",
+      date: "Apr 2025 – Jun 2025"
+    },
+    {
+      title: "IIT Hyderabad – Entrepreneurial Essentials Workshop",
+      description: "Participated in a 3-day program focused on startup fundamentals, business models, and entrepreneurial thinking.",
+      icon: "🎓",
+      date: "May 2025"
+    },
+    {
+      title: "Deloitte Australia – Technology Job Simulation",
+      description: "Completed a virtual consulting simulation involving solution development and dashboard proposal creation, focusing on technical requirements, stakeholder needs, and user experience.",
+      icon: "📊",
+      date: "June 2025"
+    },
+    {
+      title: "Calibo AI Academy – Trainee",
+      description: "Selected for Calibo AI Academy, undergoing industry-oriented training with mentorship from professionals. Gaining hands-on experience in solving real-world problems, working on case studies, and developing a product-driven mindset.",
+      icon: "🤖",
+      date: "Dec 2025 – Present"
+    },
+    {
+      title: "Byte Quest Hackathon – AI Vibe Coding Challenge",
+      description: "Participated in a 24-hour hackathon where our team built an AI-powered medical assistant to help doctors analyze patient data and generate insights using a Random Forest model, React, and FastAPI.",
+      icon: "🚀",
+      date: "Jan 4–5, 2026"
+    },
+    {
+      title: "Guidewire DEVTrails Hackathon 2026",
+      description: "Currently participating in a 45-day intensive hackathon focused on solving real-world industry problems, collaborating in teams, and building impactful solutions.",
+      icon: "⚡",
+      date: "Feb 2026 – Present"
+    },
+    {
+      title: "ISB I-Venture Program Participant",
+      description: "Selected to attend ISB I-Venture, engaging in panel discussions and networking with professionals across industries on innovation, entrepreneurship, and the future of Indian startups.",
+      icon: "🏢",
+      date: "Mar 5–6, 2026"
+    }
+  ];
 
   const certificates = [
     {
@@ -367,7 +391,14 @@ const Index = () => {
                   className="px-8 py-6 rounded-full glass-panel hover:bg-primary/10 transition-all duration-300 text-base" 
                   asChild
                 >
-                  <a href={ResumePDF} download="Rohit_Malyadri_Resume.pdf" target="_blank" rel="noopener noreferrer">
+                  <a
+                    href={ResumePDF}
+                    download="Rohit_Malyadri_Resume.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => trackResumeDownload()}
+                    aria-label="Download Rohit Malyadri's Resume (PDF)"
+                  >
                     Download Resume
                   </a>
                 </Button>
@@ -378,7 +409,11 @@ const Index = () => {
                 <div className="w-72 md:w-80 aspect-[4/5] rounded-2xl overflow-hidden shadow-anti-gravity dark:shadow-anti-gravity-dark ring-4 ring-white/60 dark:ring-white/10 glass-panel transition-all duration-500 hover:shadow-glow hover:-translate-y-2">
                   <img 
                     src={RohitPhoto}
-                    alt="Rohit Malyadri"
+                    alt="Rohit Malyadri - AI Engineer and Software Developer"
+                    width="320"
+                    height="400"
+                    loading="eager"
+                    fetchPriority="high"
                     className="w-full h-full object-cover object-center transition-transform duration-700 hover:scale-105"
                   />
                 </div>
@@ -405,14 +440,14 @@ Currently, I’m working towards becoming a high-impact software engineer by com
             <div className="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
               <Card className="text-center p-6 glass-panel transform transition-all duration-500 hover:-translate-y-2 hover:shadow-anti-gravity dark:hover:shadow-anti-gravity-dark border-transparent hover:border-primary/30">
                 <CardContent className="p-0">
-                  <div className="text-4xl mb-4 animate-float">📚</div>
+                  <div className="text-4xl mb-4 animate-float" aria-hidden="true">📚</div>
                   <h3 className="font-semibold mb-2">Education</h3>
                   <p className="text-sm text-muted-foreground">Currently pursuing 3rd year B.Tech in CSE at KL University.</p>
                 </CardContent>
               </Card>
               <Card className="text-center p-6 glass-panel transform transition-all duration-500 hover:-translate-y-2 hover:shadow-anti-gravity dark:hover:shadow-anti-gravity-dark border-transparent hover:border-primary/30" style={{ transitionDelay: '100ms' }}>
                 <CardContent className="p-0">
-                  <div className="text-4xl mb-4 animate-float-delayed">🚀</div>
+                  <div className="text-4xl mb-4 animate-float-delayed" aria-hidden="true">🚀</div>
                   <h3 className="font-semibold mb-2">Goal</h3>
                   <p className="text-sm text-muted-foreground">Seeking structured opportunities to build scalable apps and apply AI/ML to challenging problems.</p>
                 </CardContent>
@@ -431,7 +466,7 @@ Currently, I’m working towards becoming a high-impact software engineer by com
             <Card className="glass-panel p-6 transform transition-all duration-500 hover:-translate-y-2 hover:shadow-anti-gravity border-transparent hover:border-blue-500/50">
               <CardHeader className="p-0 mb-4">
                 <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center mb-4 text-blue-500">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
                 </div>
                 <CardTitle className="text-xl">Frontend</CardTitle>
               </CardHeader>
@@ -446,7 +481,7 @@ Currently, I’m working towards becoming a high-impact software engineer by com
             <Card className="glass-panel p-6 transform transition-all duration-500 hover:-translate-y-2 hover:shadow-anti-gravity border-transparent hover:border-green-500/50" style={{ transitionDelay: '100ms' }}>
               <CardHeader className="p-0 mb-4">
                 <div className="w-12 h-12 bg-green-500/10 rounded-xl flex items-center justify-center mb-4 text-green-500">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path></svg>
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path></svg>
                 </div>
                 <CardTitle className="text-xl">Backend</CardTitle>
               </CardHeader>
@@ -461,7 +496,7 @@ Currently, I’m working towards becoming a high-impact software engineer by com
             <Card className="glass-panel p-6 transform transition-all duration-500 hover:-translate-y-2 hover:shadow-anti-gravity border-transparent hover:border-purple-500/50" style={{ transitionDelay: '200ms' }}>
               <CardHeader className="p-0 mb-4">
                 <div className="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center mb-4 text-purple-500">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                 </div>
                 <CardTitle className="text-xl">AI / ML</CardTitle>
               </CardHeader>
@@ -476,7 +511,7 @@ Currently, I’m working towards becoming a high-impact software engineer by com
             <Card className="glass-panel p-6 transform transition-all duration-500 hover:-translate-y-2 hover:shadow-anti-gravity border-transparent hover:border-orange-500/50" style={{ transitionDelay: '300ms' }}>
               <CardHeader className="p-0 mb-4">
                 <div className="w-12 h-12 bg-orange-500/10 rounded-xl flex items-center justify-center mb-4 text-orange-500">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                 </div>
                 <CardTitle className="text-xl">Tools</CardTitle>
               </CardHeader>
@@ -520,7 +555,13 @@ Currently, I’m working towards becoming a high-impact software engineer by com
           <div className="flex flex-col sm:flex-row justify-between items-center mb-16 gap-6 max-w-7xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold text-center sm:text-left">Articles & Insights</h2>
             <Button variant="outline" className="glass-panel" asChild>
-              <a href="https://medium.com/@rohitmalyadri19" target="_blank" rel="noopener noreferrer">
+              <a
+                href="https://medium.com/@rohitmalyadri19"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackMediumClick()}
+                aria-label="View all blogs on Medium"
+              >
                 View All Blogs
               </a>
             </Button>
@@ -619,10 +660,10 @@ Currently, I’m working towards becoming a high-impact software engineer by com
             <Card className="p-8 md:p-12 text-center glass-panel transform transition-all duration-500 hover:-translate-y-2 hover:shadow-anti-gravity dark:hover:shadow-anti-gravity-dark border-transparent hover:border-primary/50">
               <CardContent className="p-0">
                 <div className="flex justify-center gap-6 mb-8">
-                  <div className="w-16 h-16 bg-blue-500/10 text-blue-500 rounded-2xl flex items-center justify-center animate-float">
+                  <div className="w-16 h-16 bg-blue-500/10 text-blue-500 rounded-2xl flex items-center justify-center animate-float" aria-hidden="true">
                     <FileText className="w-8 h-8" />
                   </div>
-                  <div className="w-16 h-16 bg-purple-500/10 text-purple-500 rounded-2xl flex items-center justify-center animate-float-delayed">
+                  <div className="w-16 h-16 bg-purple-500/10 text-purple-500 rounded-2xl flex items-center justify-center animate-float-delayed" aria-hidden="true">
                     <FileSignature className="w-8 h-8" />
                   </div>
                 </div>
@@ -642,8 +683,10 @@ Currently, I’m working towards becoming a high-impact software engineer by com
                       download="Rohit_Malyadri_Resume.pdf"  
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={() => trackResumeDownload()}
+                      aria-label="Download Rohit Malyadri's Resume (PDF)"
                     >
-                      <FileText className="w-5 h-5 mr-2" />
+                      <FileText className="w-5 h-5 mr-2" aria-hidden="true" />
                       Download Resume
                     </a>
                   </Button>
@@ -654,7 +697,7 @@ Currently, I’m working towards becoming a high-impact software engineer by com
                     className="w-full sm:w-auto px-8 py-6 text-base rounded-full glass-panel hover:bg-primary/10 transition-all duration-300"
                     onClick={() => setShowCoverLetter(true)}
                   >
-                    <FileSignature className="w-5 h-5 mr-2" />
+                    <FileSignature className="w-5 h-5 mr-2" aria-hidden="true" />
                     View Cover Letter
                   </Button>
                 </div>
@@ -669,6 +712,9 @@ Currently, I’m working towards becoming a high-impact software engineer by com
         <div 
           className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm transition-all animate-fade-in px-4"
           onClick={() => setShowCoverLetter(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Cover Letter"
         >
           <div 
             className="w-full max-w-3xl max-h-[90vh] overflow-y-auto glass-panel bg-white dark:bg-slate-900 rounded-2xl p-8 relative shadow-anti-gravity dark:shadow-anti-gravity-dark animate-scale-in"
@@ -677,8 +723,9 @@ Currently, I’m working towards becoming a high-impact software engineer by com
             <button
               className="absolute top-6 right-6 text-muted-foreground hover:text-foreground transition-colors bg-muted/50 hover:bg-muted p-2 rounded-full"
               onClick={() => setShowCoverLetter(false)}
+              aria-label="Close cover letter"
             >
-              <X className="w-5 h-5" />
+              <X className="w-5 h-5" aria-hidden="true" />
             </button>
             <div className="mb-8">
               <h2 className="text-2xl font-bold mb-2">Cover Letter</h2>
@@ -720,7 +767,7 @@ Currently, I’m working towards becoming a high-impact software engineer by com
         <div className="container mx-auto px-4 relative z-10">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 flex items-center justify-center gap-3">
             <span>
-              <svg className="inline-block w-8 h-8 text-blue-500 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <svg className="inline-block w-8 h-8 text-blue-500 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M16 18v-1a4 4 0 00-4-4H8a4 4 0 00-4 4v1" />
                 <circle cx="12" cy="7" r="4" />
                 <path d="M20 21v-2a4 4 0 00-3-3.87" />
@@ -737,9 +784,11 @@ Currently, I’m working towards becoming a high-impact software engineer by com
                 href="https://www.codechef.com/users/klu2300031803"
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => trackCodingProfileClick('CodeChef')}
+                aria-label="Visit Rohit's CodeChef profile"
                 className="flex items-center gap-4 p-6 rounded-xl border bg-white dark:bg-slate-900 shadow hover:shadow-lg transition-all group hover:border-orange-500"
               >
-                <img src={CodeChefLogo} alt="CodeChef" className="w-10 h-10" />
+                <img src={CodeChefLogo} alt="CodeChef" className="w-10 h-10" loading="lazy" />
                 <div>
                   <div className="font-semibold text-lg group-hover:text-orange-500 transition">CodeChef</div>
                   <div className="text-sm text-muted-foreground">klu2300031803</div>
@@ -750,9 +799,11 @@ Currently, I’m working towards becoming a high-impact software engineer by com
                 href="https://leetcode.com/u/klu2300031803/"
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => trackCodingProfileClick('LeetCode')}
+                aria-label="Visit Rohit's LeetCode profile"
                 className="flex items-center gap-4 p-6 rounded-xl border bg-white dark:bg-slate-900 shadow hover:shadow-lg transition-all group hover:border-yellow-400"
               >
-                <img src={LeetCodeLogo} alt="LeetCode" className="w-10 h-10" />
+                <img src={LeetCodeLogo} alt="LeetCode" className="w-10 h-10" loading="lazy" />
                 <div>
                   <div className="font-semibold text-lg group-hover:text-yellow-500 transition">LeetCode</div>
                   <div className="text-sm text-muted-foreground">klu2300031803</div>
@@ -763,19 +814,17 @@ Currently, I’m working towards becoming a high-impact software engineer by com
                 href="https://www.hackerrank.com/profile/h2300031803"
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => trackCodingProfileClick('HackerRank')}
+                aria-label="Visit Rohit's HackerRank profile"
                 className="flex items-center gap-4 p-6 rounded-xl border bg-white dark:bg-slate-900 shadow hover:shadow-lg transition-all group hover:border-blue-500"
               >
-                <img src={HackerRankLogo} alt="Codeforces" className="w-10 h-10" />
+                <img src={HackerRankLogo} alt="HackerRank" className="w-10 h-10" loading="lazy" />
                 <div>
                   <div className="font-semibold text-lg group-hover:text-blue-500 transition">HackerRank</div>
                   <div className="text-sm text-muted-foreground">@h2300031803</div>
                 </div>
               </a>
-              
-              {/* Add more platforms as needed */}
             </div>
-            {/* Optionally, keep the original component for fallback or dynamic handles */}
-            {/* <CodingHandles /> */}
           </div>
         </div>
       </section>
@@ -800,9 +849,13 @@ Currently, I’m working towards becoming a high-impact software engineer by com
                 <h3 className="text-2xl font-semibold mb-8">Contact Information</h3>
                 <div className="space-y-6 flex-grow">
                   {/* Personal Email */}
-                  <a href="mailto:rohitmalyadri19@gmail.com" className="flex items-center gap-4 group/link">
+                  <a
+                    href="mailto:rohitmalyadri19@gmail.com"
+                    aria-label="Send email to personal address rohitmalyadri19@gmail.com"
+                    className="flex items-center gap-4 group/link"
+                  >
                     <div className="w-12 h-12 bg-blue-500/10 text-blue-500 rounded-xl flex items-center justify-center shrink-0 group-hover/link:scale-110 group-hover/link:bg-blue-500/20 transition-all duration-300">
-                      <Mail className="w-5 h-5" />
+                      <Mail className="w-5 h-5" aria-hidden="true" />
                     </div>
                     <div className="min-w-0">
                       <div className="text-sm font-medium text-muted-foreground mb-1">Personal</div>
@@ -810,9 +863,13 @@ Currently, I’m working towards becoming a high-impact software engineer by com
                     </div>
                   </a>
                   {/* College Email */}
-                  <a href="mailto:2300031803cseh1@gmail.com" className="flex items-center gap-4 group/link">
+                  <a
+                    href="mailto:2300031803cseh1@gmail.com"
+                    aria-label="Send email to academic address 2300031803cseh1@gmail.com"
+                    className="flex items-center gap-4 group/link"
+                  >
                     <div className="w-12 h-12 bg-green-500/10 text-green-500 rounded-xl flex items-center justify-center shrink-0 group-hover/link:scale-110 group-hover/link:bg-green-500/20 transition-all duration-300">
-                      <Mail className="w-5 h-5" />
+                      <Mail className="w-5 h-5" aria-hidden="true" />
                     </div>
                     <div className="min-w-0">
                       <div className="text-sm font-medium text-muted-foreground mb-1">Academic</div>
@@ -836,7 +893,7 @@ Currently, I’m working towards becoming a high-impact software engineer by com
                   {submitStatus === 'success' ? (
                     <div className="flex flex-col items-center justify-center py-12 animate-scale-in text-center h-full">
                       <div className="w-20 h-20 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mb-6 shadow-glow">
-                        <CheckCircle2 className="w-10 h-10" />
+                        <CheckCircle2 className="w-10 h-10" aria-hidden="true" />
                       </div>
                       <h3 className="text-2xl sm:text-3xl font-bold mb-3">Message Sent! 🚀</h3>
                       <p className="text-muted-foreground text-sm sm:text-base mb-8">Thank you for reaching out. I'll get back to you as soon as possible.</p>
@@ -853,7 +910,7 @@ Currently, I’m working towards becoming a high-impact software engineer by com
                       <div className="space-y-2 group">
                         <Label htmlFor="name" className="text-foreground/80 font-medium ml-1 text-sm sm:text-base">Name</Label>
                         <div className="relative">
-                          <User className="absolute left-4 top-3.5 sm:top-4 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors duration-300 pointer-events-none" />
+                          <User className="absolute left-4 top-3.5 sm:top-4 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors duration-300 pointer-events-none" aria-hidden="true" />
                           <Input
                             id="name"
                             name="name"
@@ -869,7 +926,7 @@ Currently, I’m working towards becoming a high-impact software engineer by com
                       <div className="space-y-2 group">
                         <Label htmlFor="email" className="text-foreground/80 font-medium ml-1 text-sm sm:text-base">Email</Label>
                         <div className="relative">
-                          <Mail className="absolute left-4 top-3.5 sm:top-4 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors duration-300 pointer-events-none" />
+                          <Mail className="absolute left-4 top-3.5 sm:top-4 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors duration-300 pointer-events-none" aria-hidden="true" />
                           <Input
                             type="email"
                             id="email"
@@ -886,7 +943,7 @@ Currently, I’m working towards becoming a high-impact software engineer by com
                       <div className="space-y-2 group flex-grow">
                         <Label htmlFor="feedback" className="text-foreground/80 font-medium ml-1 text-sm sm:text-base">Message</Label>
                         <div className="relative h-[calc(100%-24px)]">
-                          <MessageSquare className="absolute left-4 top-3.5 sm:top-4 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors duration-300 pointer-events-none" />
+                          <MessageSquare className="absolute left-4 top-3.5 sm:top-4 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors duration-300 pointer-events-none" aria-hidden="true" />
                           <Textarea
                             id="feedback"
                             name="feedback"
@@ -908,13 +965,13 @@ Currently, I’m working towards becoming a high-impact software engineer by com
                         <span className="relative flex items-center justify-center gap-2">
                           {isSubmitting ? (
                             <>
-                              <Loader2 className="w-5 h-5 animate-spin" />
+                              <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
                               Sending...
                             </>
                           ) : (
                             <>
                               Send Message
-                              <Send className="w-5 h-5 group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
+                              <Send className="w-5 h-5 group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
                             </>
                           )}
                         </span>
@@ -939,5 +996,3 @@ Currently, I’m working towards becoming a high-impact software engineer by com
 };
 
 export default Index;
-
-// NOTE: src/pages/Index.tsx is long. Consider refactoring it into smaller files and components for future improvements.
