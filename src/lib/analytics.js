@@ -11,7 +11,8 @@
  */
 
 export const GA_MEASUREMENT_ID =
-  import.meta.env.VITE_GA_MEASUREMENT_ID || 'G-SN5BSQDCY2';
+  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_GA_MEASUREMENT_ID) ||
+  'G-SN5BSQDCY2';
 
 /**
  * Initializes GA4 dynamically if not already initialized via HTML script tag.
@@ -58,7 +59,7 @@ export const trackEvent = (eventName, params = {}) => {
     }
   } catch (error) {
     // Fail silently in production so user interaction is never broken
-    if (import.meta.env.DEV) {
+    if (typeof import.meta !== 'undefined' && import.meta.env?.DEV) {
       console.warn(`[GA4] Failed to track event "${eventName}":`, error);
     }
   }
@@ -153,4 +154,3 @@ export const trackCodingProfileClick = (platformName) => {
     destination_type: 'coding_profile',
   });
 };
-
